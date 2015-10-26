@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Move Time Spent</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Database api-->
+    <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
 </resources>

@@ -33,15 +33,36 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/app_bar_layout"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/BU_0.9" />
+            android:layout_marginTop="@dimen/BU_0.9"
+            android:background="@null"
+            android:completionThreshold="3"
+            android:dropDownAnchor="@+id/autocomplete_list"
+            android:dropDownHorizontalOffset="0dp"
+            android:dropDownVerticalOffset="0dp"
+            android:gravity="center_vertical"
+            android:hint="Enter a title"
+            android:imeOptions="actionNone"
+            android:lines="1"
+            android:maxLines="1"
+            android:typeface="serif" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/drawerList"
+        <ListView
+            android:id="@+id/autocomplete_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            />
-            <!--android:scrollbars="vertical"-->
+            android:divider="@android:color/black"
+            android:dividerHeight="1dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/autocomplete_text_view"
+            android:layout_marginLeft="@dimen/BU_1"
+            android:layout_marginRight="@dimen/BU_1" />
+
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/drawerList"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_below="@id/autocomplete_text_view"-->
+            <!--android:clickable="true" />-->
+        <!--&lt;!&ndash;android:scrollbars="vertical"&ndash;&gt;-->
 
     </RelativeLayout>
 
