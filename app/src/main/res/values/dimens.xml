@@ -1,0 +1,19 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Autocomplet text view width-->
+    <dimen name="autocomplete_width">150dp</dimen>
+
+    <!-- Base dimension-->
+    <dimen name="BU_1">12dp</dimen>
+    <dimen name="BU_1_2">6dp</dimen>
+    <dimen name="BU_0.9">10dp</dimen>
+    <dimen name="BU_0.4">5dp</dimen>
+    <dimen name="BU_0.5">6dp</dimen>
+    <dimen name="BU_2">24dp</dimen>
+    <dimen name="BU_3">36dp</dimen>
+    <dimen name="BU_1.5">18dp</dimen>
+</resources>
