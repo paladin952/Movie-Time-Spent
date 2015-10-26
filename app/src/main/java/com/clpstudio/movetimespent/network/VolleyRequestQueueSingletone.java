@@ -9,19 +9,19 @@ import com.android.volley.toolbox.Volley;
 /**
  * Created by lclapa on 10/26/2015.
  */
-public class VolleyRequest {
-    private static VolleyRequest mInstance;
+public class VolleyRequestQueueSingletone {
+    private static VolleyRequestQueueSingletone mInstance;
     private RequestQueue mRequestQueue;
     private static Context mCtx;
 
-    private VolleyRequest(Context context) {
+    private VolleyRequestQueueSingletone(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
     }
 
-    public static synchronized VolleyRequest getInstance(Context context) {
+    public static synchronized VolleyRequestQueueSingletone getInstance(Context context) {
         if (mInstance == null) {
-            mInstance = new VolleyRequest(context);
+            mInstance = new VolleyRequestQueueSingletone(context);
         }
         return mInstance;
     }

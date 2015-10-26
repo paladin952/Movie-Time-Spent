@@ -5,17 +5,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.clpstudio.movetimespent.R;
 import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriver;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +42,35 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
      */
     private LayoutInflater inflater;
 
-    public AutocompleteAdapter(Context context) {
+    /**
+     * The context
+     */
+    private Context mContext;
+
+    /**
+     * Listener for on drop down list click
+     */
+    public interface OnDropDownListClick{
+
+        void onSuggestionClick(TvShow show);
+
+    }
+
+    /**
+     * The listener for on click
+     */
+    private OnDropDownListClick mListener;
+
+    /**
+     * The constructor
+     * @param context The context
+     */
+    public AutocompleteAdapter(Context context, OnDropDownListClick listener) {
         mData = new ArrayList<>();
         mDatabaseSuggestionsRetriver = new DatabaseSuggestionsRetriver(context);
         inflater = LayoutInflater.from(context);
+        mContext = context;
+        mListener = listener;
     }
 
     @Override
@@ -66,7 +89,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if(convertView == null){
             viewHolder = new ViewHolder();
@@ -78,6 +101,14 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
         }
 
         viewHolder.title.setText(mData.get(position).getName());
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onSuggestionClick(getItem(position));
+            }
+        });
+
         return convertView;
     }
 
@@ -89,7 +120,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
-                    List<TvShow> results = mDatabaseSuggestionsRetriver.getTvShowsSuggetions(constraint.toString());
+                    List<TvShow> results = mDatabaseSuggestionsRetriver.getTvShowsSuggestions(constraint.toString());
                     filterResults.values = results;
                     filterResults.count = results.size();
                     return filterResults;
@@ -106,7 +137,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
                         mData.addAll((List<TvShow>) results.values);
                         notifyDataSetChanged();
                     }else{
-                        Log.d("luci", "Filter No results");
+                        Toast.makeText(mContext, mContext.getString(R.string.no_result), Toast.LENGTH_SHORT).show();
                     }
                 }
             };

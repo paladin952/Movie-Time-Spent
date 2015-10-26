@@ -6,6 +6,9 @@
 
     <!-- Autocomplet text view width-->
     <dimen name="autocomplete_width">150dp</dimen>
+    
+    <!-- Card view height-->
+    <dimen name="card_view_size">150dp</dimen>
 
     <!-- Base dimension-->
     <dimen name="BU_1">12dp</dimen>

@@ -49,20 +49,20 @@
         <ListView
             android:id="@+id/autocomplete_list"
             android:layout_width="match_parent"
-            android:divider="@android:color/black"
-            android:dividerHeight="1dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/autocomplete_text_view"
             android:layout_marginLeft="@dimen/BU_1"
-            android:layout_marginRight="@dimen/BU_1" />
+            android:layout_marginRight="@dimen/BU_1"
+            android:divider="@android:color/black"
+            android:dividerHeight="1dp" />
 
-        <!--<android.support.v7.widget.RecyclerView-->
-            <!--android:id="@+id/drawerList"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_below="@id/autocomplete_text_view"-->
-            <!--android:clickable="true" />-->
-        <!--&lt;!&ndash;android:scrollbars="vertical"&ndash;&gt;-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/movies_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/autocomplete_text_view"
+            android:clickable="true"
+            android:scrollbars="vertical" />
 
     </RelativeLayout>
 

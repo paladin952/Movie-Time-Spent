@@ -4,4 +4,7 @@
 
     <!-- Database api-->
     <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
+
+    <!-- Errors-->
+    <string name="no_result">No results!</string>
 </resources>
