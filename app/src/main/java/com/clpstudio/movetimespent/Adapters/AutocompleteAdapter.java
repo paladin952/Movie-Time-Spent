@@ -1,7 +1,6 @@
 package com.clpstudio.movetimespent.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.Toast;
 
 import com.clpstudio.movetimespent.R;
 import com.clpstudio.movetimespent.model.TvShow;
-import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriver;
+import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
     /**
      * Backend retriver
      */
-    private DatabaseSuggestionsRetriver mDatabaseSuggestionsRetriver;
+    private DatabaseSuggestionsRetriever mDatabaseSuggestionsRetriever;
 
     /**
      * Layout inflater
@@ -67,7 +66,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
      */
     public AutocompleteAdapter(Context context, OnDropDownListClick listener) {
         mData = new ArrayList<>();
-        mDatabaseSuggestionsRetriver = new DatabaseSuggestionsRetriver(context);
+        mDatabaseSuggestionsRetriever = new DatabaseSuggestionsRetriever(context);
         inflater = LayoutInflater.from(context);
         mContext = context;
         mListener = listener;
@@ -120,9 +119,11 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
-                    List<TvShow> results = mDatabaseSuggestionsRetriver.getTvShowsSuggestions(constraint.toString());
-                    filterResults.values = results;
-                    filterResults.count = results.size();
+                    if(constraint != null){
+                        List<TvShow> results = mDatabaseSuggestionsRetriever.getTvShowsSuggestions(constraint.toString());
+                        filterResults.values = results;
+                        filterResults.count = results.size();
+                    }
                     return filterResults;
                 }
 

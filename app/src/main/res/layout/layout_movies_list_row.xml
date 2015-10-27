@@ -19,18 +19,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="@dimen/BU_1"
-            android:text="title" />
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/BU_2"
+            android:text="title"
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/seasons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/BU_1"
-            android:text="seasons" />
+            android:layout_marginRight="@dimen/BU_2"
+            android:text="seasons"
+            android:textColor="@android:color/white" />
 
+        <ImageButton
+            android:layout_marginTop="@dimen/BU_1_2"
+            android:layout_marginRight="@dimen/BU_1_2"
+            android:layout_alignParentRight="true"
+            android:id="@+id/remove_image"
+            android:background="@drawable/ic_remove"
+            android:layout_width="@dimen/remove_image"
+            android:layout_height="@dimen/remove_image" />
     </RelativeLayout>
 
 </FrameLayout>

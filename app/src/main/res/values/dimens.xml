@@ -8,7 +8,10 @@
     <dimen name="autocomplete_width">150dp</dimen>
     
     <!-- Card view height-->
-    <dimen name="card_view_size">150dp</dimen>
+    <dimen name="card_view_size">175dp</dimen>
+
+    <!-- Remove button size-->
+    <dimen name="remove_image">35dp</dimen>
 
     <!-- Base dimension-->
     <dimen name="BU_1">12dp</dimen>

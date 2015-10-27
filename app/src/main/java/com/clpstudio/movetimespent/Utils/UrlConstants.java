@@ -12,7 +12,6 @@ public class UrlConstants {
 
     public static final String API_KEY = "&api_key=" + "64dc1ebd6ed1b0db0498b008931fb295";
 
-
     public static final String API_KEY_QUESTION = "?api_key=" + "64dc1ebd6ed1b0db0498b008931fb295";
 
     public static final String FIND_SHOW_BY_ID = "http://api.themoviedb.org/3/tv/";

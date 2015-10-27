@@ -5,6 +5,13 @@
     <!-- Database api-->
     <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
 
+    <!-- Edit text hints-->
+    <string name="hint_seasons_standard">Seasons number</string>
+    <string name="hint_autocomplete_standard">"Enter show title"</string>
+
+
+
     <!-- Errors-->
     <string name="no_result">No results!</string>
+    <string name="incorrect_seasons">Incorrect season number!</string>
 </resources>

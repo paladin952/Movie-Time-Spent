@@ -26,31 +26,138 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.AppBarLayout>
 
-
-        <AutoCompleteTextView
-            android:id="@+id/autocomplete_text_view"
-            android:layout_width="@dimen/autocomplete_width"
+        <LinearLayout
+            android:id="@+id/time_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/app_bar_layout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/BU_0.9"
-            android:background="@null"
-            android:completionThreshold="3"
-            android:dropDownAnchor="@+id/autocomplete_list"
-            android:dropDownHorizontalOffset="0dp"
-            android:dropDownVerticalOffset="0dp"
-            android:gravity="center_vertical"
-            android:hint="Enter a title"
-            android:imeOptions="actionNone"
-            android:lines="1"
-            android:maxLines="1"
-            android:typeface="serif" />
+            android:layout_below="@id/app_bar_layout"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_marginLeft="@dimen/BU_2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="0"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Days"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:text="0"
+                    android:id="@+id/hours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hours"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/BU_2"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="0"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/minutes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Minutes"
+                    android:textSize="@dimen/BU_1.5"
+                    android:typeface="serif" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/autocomplete_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/time_container">
+
+            <AutoCompleteTextView
+                android:id="@+id/autocomplete_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/BU_1"
+                android:layout_marginTop="@dimen/BU_0.9"
+                android:layout_weight="1"
+                android:background="@null"
+                android:completionThreshold="3"
+                android:dropDownAnchor="@+id/autocomplete_list"
+                android:dropDownHorizontalOffset="0dp"
+                android:dropDownVerticalOffset="0dp"
+                android:gravity="center_vertical"
+                android:hint="@string/hint_autocomplete_standard"
+                android:imeOptions="actionNone"
+                android:lines="1"
+                android:maxLines="1"
+                android:typeface="serif" />
+
+            <EditText
+                android:id="@+id/seasons_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/BU_1"
+                android:layout_marginTop="@dimen/BU_0.9"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/hint_seasons_standard"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:lines="1"
+                android:maxLines="1"
+                android:typeface="serif" />
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/autocomplete_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/autocomplete_text_view"
+            android:layout_below="@+id/autocomplete_container"
             android:layout_marginLeft="@dimen/BU_1"
             android:layout_marginRight="@dimen/BU_1"
             android:divider="@android:color/black"
@@ -60,7 +167,7 @@
             android:id="@+id/movies_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/autocomplete_text_view"
+            android:layout_below="@id/autocomplete_container"
             android:clickable="true"
             android:scrollbars="vertical" />
 

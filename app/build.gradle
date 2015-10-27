@@ -27,4 +27,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+//horizontal picker
+    compile 'com.wefika:horizontal-picker:1.1.0'
 }

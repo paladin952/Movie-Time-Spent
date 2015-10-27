@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,12 +34,33 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     private List<TvShow>mData;
 
     /**
+     * Interface for when we delete an movie
+     */
+    public interface OnDeletedMovie{
+        void onDeleteMovie();
+    }
+
+    /**
+     * Listener
+     */
+    private OnDeletedMovie mListener;
+
+    /**
      * The constructor
      * @param mContext The context
      */
-    public MoviesListAdapter(Context mContext) {
+    public MoviesListAdapter(Context mContext, OnDeletedMovie listener) {
         this.mContext = mContext;
         this.mData= new ArrayList<>();
+        this.mListener = listener;
+    }
+
+    /**
+     * Get the list of shows
+     * @return List of Shows
+     */
+    public  List<TvShow> getData(){
+        return mData;
     }
 
     /**
@@ -58,16 +81,75 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        TvShow show = mData.get(position);
-        Picasso.with(mContext).load(UrlConstants.BASE_IMAGE_URL + show.getPosterUrl() + UrlConstants.API_KEY_QUESTION).into(holder.image);
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        final TvShow show = mData.get(position);
+
+
+        //download image after size was measured for Picasso center crop size
+        ViewTreeObserver vto = holder.image.getViewTreeObserver();
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                holder.image.getViewTreeObserver().removeOnPreDrawListener(this);
+                int finalHeight = holder.image.getMeasuredHeight();
+                int finalWidth = holder.image.getMeasuredWidth();
+
+                Picasso.with(mContext)
+                        .load(UrlConstants.BASE_IMAGE_URL + show.getPosterUrl() + UrlConstants.API_KEY_QUESTION)
+                        .resize(finalWidth, finalHeight)
+                        .centerCrop()
+                        .error(R.drawable.ic_no_image)
+                        .into(holder.image);
+
+                return true;
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mData.get(position).isShownRemove()){
+                    mData.get(position).setIsShownRemove(false);
+                    holder.remove.setVisibility(View.GONE);
+                }else{
+                    setRemoveVisibility(position);
+                }
+            }
+        });
+
+        holder.remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mData.remove(position);
+                notifyDataSetChanged();
+                mListener.onDeleteMovie();
+            }
+        });
+
+        if(show.isShownRemove()){
+            holder.remove.setVisibility(View.VISIBLE);
+        }else{
+            holder.remove.setVisibility(View.GONE);
+        }
+
         holder.title.setText(show.getName());
-        holder.season.setText(show.getSeason());
+        holder.season.setText(show.getNumberOfSeasons() + " seasons");
     }
 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    /**
+     * set visibility of the remove button
+     * @param position Position
+     */
+    private void setRemoveVisibility(int position){
+        for(int i =0; i < mData.size(); i++){
+            mData.get(i).setIsShownRemove(false);
+        }
+        mData.get(position).setIsShownRemove(true);
+        notifyDataSetChanged();
     }
 
     /**
@@ -90,11 +172,18 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
          */
         private ImageView image;
 
+        /**
+         * The remove button
+         */
+        private ImageButton remove;
+
+
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
             season = (TextView)itemView.findViewById(R.id.seasons);
             image = (ImageView)itemView.findViewById(R.id.image);
+            remove = (ImageButton)itemView.findViewById(R.id.remove_image);
         }
     }
 }
