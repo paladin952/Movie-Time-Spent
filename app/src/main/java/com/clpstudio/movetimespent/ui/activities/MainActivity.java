@@ -2,6 +2,9 @@ package com.clpstudio.movetimespent.ui.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,14 +21,18 @@ import android.widget.Toast;
 import com.clpstudio.movetimespent.R;
 import com.clpstudio.movetimespent.adapters.AutocompleteAdapter;
 import com.clpstudio.movetimespent.adapters.MoviesListAdapter;
+import com.clpstudio.movetimespent.loaders.DatabaseLoader;
 import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
+import com.clpstudio.movetimespent.persistance.DatabaseDAO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick, DatabaseSuggestionsRetriever.OnNetworkLoadFinish, MoviesListAdapter.OnDeletedMovie {
+public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
+        DatabaseSuggestionsRetriever.OnNetworkLoadFinish,
+        MoviesListAdapter.OnDeletedMovie, LoaderManager.LoaderCallbacks<List<TvShow>> {
 
     /**
      * Api key
@@ -87,17 +94,59 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private MoviesListAdapter mMoviesListAdapter;
 
+    /**
+     * Loader's callbacks
+     */
+    private LoaderManager.LoaderCallbacks<List<TvShow>> mCallbacks;
+
+    /**
+     * Boolean to check if back button was double pressed
+     */
+    private boolean mDoubleBackToExitPressedOnce;
+
+    /**
+     * Handler for delay operations
+     */
+    private Handler mHandler = new Handler();
+
+    /**
+     * The database dao
+     */
+    private DatabaseDAO mDatabaseDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mCallbacks = this;
         setupNetwork();
+        setupDatabase();
         linkUi();
         setupAutocomplete();
         setupMovieList();
         setupListeners();
         setupToolbar();
         API_KEY = getString(R.string.api_key);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDatabaseDAO.close();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
+        int CURRENT_LOADER_ID = DatabaseLoader.LOADER_ID;
+        loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks);
+    }
+
+
+    private void setupDatabase() {
+        mDatabaseDAO = new DatabaseDAO(this);
+        mDatabaseDAO.open();
     }
 
     /**
@@ -115,10 +164,16 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                         return true;
                     } else {
                         mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
-                        mShow.setSeason(mSeasonEditText.getText().toString());
+                        mShow.setSeasonsNumber(mSeasonEditText.getText().toString());
                         mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
+
+                        //set show id to be the same with the database id
+                        //so it can be deleted easily
+                        int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(), String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl());
+                        mShow.setId(databaseId);
                         mMoviesListAdapter.add(mShow);
 
+                        //add to database
                         resetEditTexts();
                         closeSoftKeyboard();
                         mSeasonEditText.clearFocus();
@@ -252,6 +307,26 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mMinutesSpent.setText(timeList.get(2));
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (this.mDoubleBackToExitPressedOnce) {
+            finish();
+            return;
+        }
+
+        mDoubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.toast_double_back_click), Toast.LENGTH_SHORT).show();
+
+        mHandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                MainActivity.this.mDoubleBackToExitPressedOnce = false;
+            }
+        }, 1000);
+    }
+
     /**
      * Called when the data from server finished loading
      *
@@ -271,8 +346,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * Recalculate the time when deleted one movie
      */
     @Override
-    public void onDeleteMovie() {
+    public void onDeleteMovie(int id) {
         setTime(calculateTimeSpent());
+        mDatabaseDAO.deleteTvShow(id);
     }
 
     /**
@@ -284,4 +360,22 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     public void onSuggestionClickListener(TvShow show) {
         mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
     }
+
+    /**Loader listeners*/
+    @Override
+    public Loader<List<TvShow>> onCreateLoader(int id, Bundle args) {
+        return new DatabaseLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<TvShow>> loader, List<TvShow> data) {
+        mMoviesListAdapter.addAll(data);
+        setTime(calculateTimeSpent());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<TvShow>> loader) {
+
+    }
+
 }

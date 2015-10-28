@@ -6,6 +6,11 @@ package com.clpstudio.movetimespent.persistance.model;
 public class DBTvShowModel {
 
     /**
+     * The id = position from database
+     */
+    private int mDbId;
+
+    /**
      * The name
      */
     private String mName;
@@ -19,6 +24,11 @@ public class DBTvShowModel {
      * The total time of the movie in minutes
      */
     private String mMinutesTotalTime;
+
+    /**
+     * Url to poster image
+     */
+    private String mPosterUrl;
 
     public String getName() {
         return mName;
@@ -43,4 +53,22 @@ public class DBTvShowModel {
     public void setMinutesTotalTime(String mMinutesTotalTime) {
         this.mMinutesTotalTime = mMinutesTotalTime;
     }
+
+    public int getDbId() {
+        return mDbId;
+    }
+
+    public void setDbId(int mDbId) {
+        this.mDbId = mDbId;
+    }
+
+    public void setPosterUrl(String mPosterUrl) {
+        this.mPosterUrl = mPosterUrl;
+    }
+
+    public String getPosterUrl(){
+        return mPosterUrl;
+    }
+
+
 }

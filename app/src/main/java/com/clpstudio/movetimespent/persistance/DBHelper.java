@@ -45,6 +45,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SHOW_TIME_SPENT = "Time";
 
     /**
+     * Column for images url
+     */
+    public static final String COLUMN_IMAGE_URL = "ImageUrl";
+
+    /**
      * The mInstance of DBHelper for singletone
      */
     private static DBHelper mInstance = null;
@@ -53,11 +58,12 @@ public class DBHelper extends SQLiteOpenHelper {
      * Query for creating table
      */
     private static final String DATABASE_CREATE = "create table if not exists "
-            + TABLE_TV_SHOW_NAME + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_SHOW_NAME
-            + " text, " + COLUMN_SHOW_SEASONS_NUMBER
-            + "text, "
-            + COLUMN_SHOW_TIME_SPENT + " text);";
+            + TABLE_TV_SHOW_NAME +
+            "(" + COLUMN_ID + " integer primary key autoincrement, "
+            + COLUMN_SHOW_NAME + " text, "
+            + COLUMN_SHOW_SEASONS_NUMBER + " text, "
+            + COLUMN_SHOW_TIME_SPENT + " text, "
+            + COLUMN_IMAGE_URL + " text);";
 
 
     /**

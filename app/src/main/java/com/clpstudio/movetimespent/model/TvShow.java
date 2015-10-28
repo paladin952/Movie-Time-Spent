@@ -118,7 +118,7 @@ public class TvShow {
         return mNumberOfSeasons;
     }
 
-    public void setSeason(String season){
+    public void setSeasonsNumber(String season){
         mNumberOfSeasons = season;
     }
 

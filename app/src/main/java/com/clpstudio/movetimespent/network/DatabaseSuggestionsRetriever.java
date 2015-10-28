@@ -123,7 +123,7 @@ public class DatabaseSuggestionsRetriever {
                     }
 
                     show.setPosterUrl(posterPath);
-                    show.setSeason(seasons);
+                    show.setSeasonsNumber(seasons);
                     show.setNumberOfEpisoades(numberOfEpisodes);
                     listener.onNetworkLoadFinish(show);
                 } catch (JSONException e) {

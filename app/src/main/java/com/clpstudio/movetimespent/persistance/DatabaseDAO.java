@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.persistance.model.DBTvShowModel;
 
 import java.util.ArrayList;
@@ -33,7 +35,8 @@ public class DatabaseDAO {
             DBHelper.COLUMN_ID,
             DBHelper.COLUMN_SHOW_NAME,
             DBHelper.COLUMN_SHOW_SEASONS_NUMBER,
-            DBHelper.COLUMN_SHOW_TIME_SPENT
+            DBHelper.COLUMN_SHOW_TIME_SPENT,
+            DBHelper.COLUMN_IMAGE_URL
     };
 
     /**
@@ -69,12 +72,22 @@ public class DatabaseDAO {
      * @param seasonsNumber The number of seasons to be calculated later
      * @param time          The value
      */
-    public void addCurrencyItem(String state, String seasonsNumber, String time) {
+    public int addTvShowItem(String state, String seasonsNumber, String time, String imageUrl) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.COLUMN_SHOW_NAME, state);
         values.put(DBHelper.COLUMN_SHOW_SEASONS_NUMBER, seasonsNumber);
         values.put(DBHelper.COLUMN_SHOW_TIME_SPENT, time);
-        mDatabase.insert(DBHelper.TABLE_TV_SHOW_NAME, null, values);
+        values.put(DBHelper.COLUMN_IMAGE_URL, imageUrl);
+        long lastInsertedId = mDatabase.insert(DBHelper.TABLE_TV_SHOW_NAME, null, values);
+        return (int)lastInsertedId;
+    }
+
+    public void deleteTvShow(int id){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBHelper.COLUMN_ID, id);
+
+        int res = mDatabase.delete(DBHelper.TABLE_TV_SHOW_NAME, DBHelper.COLUMN_ID +"=?", new String[]{String.valueOf(id)});
+        Log.d("luci", "Deletion from db: " + Integer.toString(res));
     }
 
     /**
@@ -82,14 +95,16 @@ public class DatabaseDAO {
      *
      * @param id    The item id
      * @param state The state name
-     * @param value The value of item
+     * @param time The value of item
+     * @param imageUrl The url to donwload image
      * @return The row where introduced
      */
-    public int updateCurrencyItem(long id, String state, String seasonsNumber, String value) {
+    public int updateCurrencyItem(long id, String state, String seasonsNumber, String time, String imageUrl) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBHelper.COLUMN_SHOW_NAME, state); //These Fields should be your String values of actual column names
         contentValues.put(DBHelper.COLUMN_SHOW_SEASONS_NUMBER, seasonsNumber);
-        contentValues.put(DBHelper.COLUMN_SHOW_TIME_SPENT, value);
+        contentValues.put(DBHelper.COLUMN_SHOW_TIME_SPENT, time);
+        contentValues.put(DBHelper.COLUMN_IMAGE_URL, imageUrl);
         return mDatabase.update(DBHelper.TABLE_TV_SHOW_NAME, contentValues, "_id " + "=" + id, null);
     }
 
@@ -98,15 +113,15 @@ public class DatabaseDAO {
      *
      * @return List<DBCurrencyModel>
      */
-    public List<DBTvShowModel> getAllShows() {
-        List<DBTvShowModel> currencies = new ArrayList<>();
+    public List<TvShow> getAllShows() {
+        List<TvShow> currencies = new ArrayList<>();
 
         Cursor cursor = mDatabase.query(DBHelper.TABLE_TV_SHOW_NAME,
                 mAllColumnsArray, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            DBTvShowModel item = cursorToCurrencyItem(cursor);
+            TvShow item = cursorToTvShowItem(cursor);
             currencies.add(item);
             cursor.moveToNext();
         }
@@ -121,11 +136,19 @@ public class DatabaseDAO {
      * @param cursor The cursor
      * @return Item model
      */
-    private DBTvShowModel cursorToCurrencyItem(Cursor cursor) {
+    private TvShow cursorToTvShowItem(Cursor cursor) {
         DBTvShowModel item = new DBTvShowModel();
+        item.setDbId((int) cursor.getLong(0));
         item.setName(cursor.getString(1));
         item.setNumberOfSeasons(cursor.getString(2));
         item.setMinutesTotalTime(cursor.getString(3));
-        return item;
+        item.setPosterUrl(cursor.getString(4));
+
+        //now convert it to TvShow type
+        TvShow resultTvShow = new TvShow(item.getDbId(), item.getName());
+        resultTvShow.setMinutesTotalTime(Integer.parseInt(item.getMinutesTotalTime()));
+        resultTvShow.setSeasonsNumber(item.getNumberOfSeasons());
+        resultTvShow.setPosterUrl(item.getPosterUrl());
+        return resultTvShow;
     }
 }
