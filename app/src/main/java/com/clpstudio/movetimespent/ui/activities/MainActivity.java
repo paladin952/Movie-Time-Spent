@@ -1,6 +1,7 @@
 package com.clpstudio.movetimespent.ui.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.LoaderManager;
@@ -9,7 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -19,12 +24,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.clpstudio.movetimespent.R;
+import com.clpstudio.movetimespent.Utils.FacebookUtils;
 import com.clpstudio.movetimespent.adapters.AutocompleteAdapter;
 import com.clpstudio.movetimespent.adapters.MoviesListAdapter;
 import com.clpstudio.movetimespent.loaders.DatabaseLoader;
 import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
+import com.clpstudio.movetimespent.network.NetworkUtils;
 import com.clpstudio.movetimespent.persistance.DatabaseDAO;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +121,17 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     private boolean mDoubleBackToExitPressedOnce;
 
     /**
+     * Facebook callbacks
+     */
+    private CallbackManager callbackManager;
+
+    /**
+     * Dialog for share
+     */
+    private ShareDialog mFacebookShareDialog;
+
+
+    /**
      * Handler for delay operations
      */
     private Handler mHandler = new Handler();
@@ -126,7 +153,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         setupMovieList();
         setupListeners();
         setupToolbar();
+        setupFacebookSdk();
         API_KEY = getString(R.string.api_key);
+        Log.d("face", FacebookUtils.getKeyHash(this));
+
+
     }
 
     @Override
@@ -143,7 +174,89 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks);
     }
 
+    /**
+     * Setup for facebook sharing
+     */
+    private void setupFacebookSdk() {
+        FacebookSdk.sdkInitialize(this);
+        mFacebookShareDialog = new ShareDialog(this);
+        callbackManager = CallbackManager.Factory.create();
 
+        mFacebookShareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Log.d("luci", "share dialog success");
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("luci", "share dialog cancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("luci", "share dialog error");
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.share_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_share_facebook){
+            if(NetworkUtils.isNetworkAvailable(this)){
+//                shareCustomGraph();
+                FacebookUtils.shareLinkOnFacebook(this, mFacebookShareDialog, mDaysSpent.getText().toString(), mHoursSpent.getText().toString(), mMinutesSpent.getText().toString());
+            }else{
+                Toast.makeText(this, getString(R.string.toast_no_internet), Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void shareCustomGraph(){
+
+        // Create an object
+        ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                .putString("og:type", "video.tv_show")
+                .putString("og:title", "Movie Time Spent")
+                .putString("og:description", "Android app for calculating time spent watching tv shows")
+                .build();
+
+        // Create an action
+        ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                .setActionType("books.reads")
+                .putObject("book", object)
+                .build();
+
+        // Create the content
+        ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                .setPreviewPropertyName("book")
+                .setAction(action)
+                .build();
+
+        ShareDialog.show(this, content);
+
+    }
+
+    /**
+     * Prepare database objects
+     */
     private void setupDatabase() {
         mDatabaseDAO = new DatabaseDAO(this);
         mDatabaseDAO.open();
@@ -309,7 +422,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         if (this.mDoubleBackToExitPressedOnce) {
             finish();
             return;
@@ -319,7 +431,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         Toast.makeText(this, getString(R.string.toast_double_back_click), Toast.LENGTH_SHORT).show();
 
         mHandler.postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 MainActivity.this.mDoubleBackToExitPressedOnce = false;

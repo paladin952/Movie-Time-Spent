@@ -24,6 +24,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/holo_red_dark"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
+
         </android.support.design.widget.AppBarLayout>
 
         <LinearLayout

@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:mContext="sciencecalculator.clpstudio.com.sciencecalculator.ui.activities.MainActivity">
+    <item
+        android:id="@+id/action_share_facebook"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="always"
+        android:title="@string/facebook" />
+
+</menu>
