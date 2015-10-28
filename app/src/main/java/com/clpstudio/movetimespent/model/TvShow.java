@@ -51,7 +51,15 @@ public class TvShow {
      */
     private Map<String, String>mSeasonsEpisodes;
 
+    /**
+     * Boolean to check if remove button is visible
+     */
     private boolean isShownRemove;
+
+    /**
+     * The total time of the movie in minutes
+     */
+    private int mMinutesTotalTime;
 
     /**
      * The constructor
@@ -63,6 +71,7 @@ public class TvShow {
         this.mName = name;
         mEpisodesRunTime = new ArrayList<>();
         mSeasonsEpisodes = new HashMap<>();
+        mMinutesTotalTime = 0;
     }
 
     public Map<String, String> getSeasonsEpisodesNumber() {
@@ -135,5 +144,13 @@ public class TvShow {
 
     public void setNumberOfEpisoades(int mNumberOfEpisoades) {
         this.mNumberOfEpisoades = mNumberOfEpisoades;
+    }
+
+    public int getMinutesTotalTime() {
+        return mMinutesTotalTime;
+    }
+
+    public void setMinutesTotalTime(int mMinutesTotalTime) {
+        this.mMinutesTotalTime = mMinutesTotalTime;
     }
 }

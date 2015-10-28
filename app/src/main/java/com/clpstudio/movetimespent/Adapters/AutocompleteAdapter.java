@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.Adapters;
+package com.clpstudio.movetimespent.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -51,7 +51,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
      */
     public interface OnDropDownListClick{
 
-        void onSuggestionClick(TvShow show);
+        void onSuggestionClickListener(TvShow show);
 
     }
 
@@ -104,7 +104,7 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onSuggestionClick(getItem(position));
+                mListener.onSuggestionClickListener(getItem(position));
             }
         });
 
@@ -147,6 +147,9 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
         return mResultFilter;
     }
 
+    /**
+     * The view holder
+     */
     public static class ViewHolder{
         public TextView title;
     }

@@ -15,13 +15,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.clpstudio.movetimespent.Adapters.AutocompleteAdapter;
-import com.clpstudio.movetimespent.Adapters.MoviesListAdapter;
 import com.clpstudio.movetimespent.R;
+import com.clpstudio.movetimespent.adapters.AutocompleteAdapter;
+import com.clpstudio.movetimespent.adapters.MoviesListAdapter;
 import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
-import com.clpstudio.movetimespent.network.VolleyRequestQueueSingletone;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +28,14 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick, DatabaseSuggestionsRetriever.OnNetworkLoadFinish, MoviesListAdapter.OnDeletedMovie {
 
     /**
-     * Volley request queue
-     */
-    private RequestQueue requestQueue;
-
-    /**
      * Api key
      */
     public static String API_KEY;
 
     /**
-     * The toolbar
+     * The mToolbar
      */
-    private Toolbar toolbar;
+    private Toolbar mToolbar;
 
     /**
      * The autocomplete edit text
@@ -104,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         setupMovieList();
         setupListeners();
         setupToolbar();
-        setupVolley();
         API_KEY = getString(R.string.api_key);
     }
 
@@ -124,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                     } else {
                         mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
                         mShow.setSeason(mSeasonEditText.getText().toString());
+                        mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
                         mMoviesListAdapter.add(mShow);
 
                         resetEditTexts();
@@ -139,6 +132,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         });
     }
 
+    /**
+     * Close the keyboard automatically
+     */
     private void closeSoftKeyboard() {
         if (getCurrentFocus() != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -190,35 +186,70 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mMoviesList = (RecyclerView) findViewById(R.id.movies_list);
         mSeasonEditText = (EditText) findViewById(R.id.seasons_edit_text);
         mSeasonEditText.setVisibility(View.GONE);
-        mDaysSpent = (TextView)findViewById(R.id.days);
-        mHoursSpent = (TextView)findViewById(R.id.hours);
-        mMinutesSpent = (TextView)findViewById(R.id.minutes);
-    }
-
-
-    /**
-     * Setup volley library for http calls
-     */
-    private void setupVolley() {
-        requestQueue = VolleyRequestQueueSingletone.getInstance(this).getRequestQueue();
+        mDaysSpent = (TextView) findViewById(R.id.days);
+        mHoursSpent = (TextView) findViewById(R.id.hours);
+        mMinutesSpent = (TextView) findViewById(R.id.minutes);
     }
 
     /**
-     * Setup the toolbar
+     * Setup the mToolbar
      */
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
     }
 
     /**
-     * Called when drop down suggestion list is clicked
+     * Calculate the total time spent from one show
      *
      * @param show The show
+     * @return int minutes
      */
-    @Override
-    public void onSuggestionClick(TvShow show) {
-        mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
+    private int calculateTimeForOneShow(TvShow show) {
+        int minutes = 0;
+        for (int i = 0; i < Integer.parseInt(show.getNumberOfSeasons()); i++) {
+            if (show.getEpisodesRunTime().size() > 0) {
+                int timePerSeason = Integer.parseInt(show.getEpisodesRunTime().get(0)) * Integer.parseInt(show.getSeasonsEpisodesNumber().get(String.valueOf(i)));
+                minutes += timePerSeason;
+            }
+        }
+        return minutes;
+    }
+
+    /**
+     * Calculate the total time spent
+     *
+     * @return A list<string> of time {day, hours, minutes}
+     */
+    private List<String> calculateTimeSpent() {
+        List<TvShow> showList = mMoviesListAdapter.getData();
+
+        int totalMinutes = 0;
+        for (TvShow show : showList) {
+            totalMinutes += show.getMinutesTotalTime();
+        }
+
+        int seconds = totalMinutes * 60;
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        List<String> result = new ArrayList<>();
+        result.add(String.valueOf(day));
+        result.add(String.valueOf(hours));
+        result.add(String.valueOf(minute));
+
+        return result;
+    }
+
+    /**
+     * Set the time on ui
+     *
+     * @param timeList The list<string> of time {day, hours, minutes}
+     */
+    private void setTime(List<String> timeList) {
+        mDaysSpent.setText(timeList.get(0));
+        mHoursSpent.setText(timeList.get(1));
+        mMinutesSpent.setText(timeList.get(2));
     }
 
     /**
@@ -236,33 +267,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mSeasonEditText.requestFocus();
     }
 
-    private List<String> calculateTimeSpent() {
-        List<TvShow> showList = mMoviesListAdapter.getData();
-
-        int minutes = 0;
-
-        for (TvShow show : showList) {
-            for (int i =0; i < Integer.parseInt(show.getNumberOfSeasons()); i++) {
-                if(show.getEpisodesRunTime().size() > 0){
-                    int timePerSeason = Integer.parseInt(show.getEpisodesRunTime().get(0)) * Integer.parseInt(show.getSeasonsEpisodesNumber().get(String.valueOf(i)));
-                    minutes += timePerSeason;
-                }
-            }
-
-        }
-
-        int seconds = minutes * 60;
-        int day = (int) TimeUnit.SECONDS.toDays(seconds);
-        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
-        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
-        List<String> result = new ArrayList<>();
-        result.add(String.valueOf(day));
-        result.add(String.valueOf(hours));
-        result.add(String.valueOf(minute));
-
-        return result;
-    }
-
     /**
      * Recalculate the time when deleted one movie
      */
@@ -271,9 +275,13 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         setTime(calculateTimeSpent());
     }
 
-    private void setTime(List<String> timeList){
-        mDaysSpent.setText(timeList.get(0));
-        mHoursSpent.setText(timeList.get(1));
-        mMinutesSpent.setText(timeList.get(2));
+    /**
+     * Called when drop down suggestion list is clicked
+     *
+     * @param show The show
+     */
+    @Override
+    public void onSuggestionClickListener(TvShow show) {
+        mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
     }
 }
