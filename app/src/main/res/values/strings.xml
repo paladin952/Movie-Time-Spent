@@ -14,4 +14,7 @@
     <!-- Errors-->
     <string name="no_result">No results!</string>
     <string name="incorrect_seasons">Incorrect season number!</string>
+
+    <!-- On vack pressed-->
+    <string name="toast_double_back_click">Please click BACK again to exit!</string>
 </resources>

@@ -2,6 +2,9 @@ package com.clpstudio.movetimespent.ui.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,24 +18,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.clpstudio.movetimespent.Adapters.AutocompleteAdapter;
-import com.clpstudio.movetimespent.Adapters.MoviesListAdapter;
 import com.clpstudio.movetimespent.R;
+import com.clpstudio.movetimespent.adapters.AutocompleteAdapter;
+import com.clpstudio.movetimespent.adapters.MoviesListAdapter;
+import com.clpstudio.movetimespent.loaders.DatabaseLoader;
 import com.clpstudio.movetimespent.model.TvShow;
 import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
-import com.clpstudio.movetimespent.network.VolleyRequestQueueSingletone;
+import com.clpstudio.movetimespent.persistance.DatabaseDAO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick, DatabaseSuggestionsRetriever.OnNetworkLoadFinish, MoviesListAdapter.OnDeletedMovie {
-
-    /**
-     * Volley request queue
-     */
-    private RequestQueue requestQueue;
+public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
+        DatabaseSuggestionsRetriever.OnNetworkLoadFinish,
+        MoviesListAdapter.OnDeletedMovie, LoaderManager.LoaderCallbacks<List<TvShow>> {
 
     /**
      * Api key
@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     public static String API_KEY;
 
     /**
-     * The toolbar
+     * The mToolbar
      */
-    private Toolbar toolbar;
+    private Toolbar mToolbar;
 
     /**
      * The autocomplete edit text
@@ -94,18 +94,59 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private MoviesListAdapter mMoviesListAdapter;
 
+    /**
+     * Loader's callbacks
+     */
+    private LoaderManager.LoaderCallbacks<List<TvShow>> mCallbacks;
+
+    /**
+     * Boolean to check if back button was double pressed
+     */
+    private boolean mDoubleBackToExitPressedOnce;
+
+    /**
+     * Handler for delay operations
+     */
+    private Handler mHandler = new Handler();
+
+    /**
+     * The database dao
+     */
+    private DatabaseDAO mDatabaseDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mCallbacks = this;
         setupNetwork();
+        setupDatabase();
         linkUi();
         setupAutocomplete();
         setupMovieList();
         setupListeners();
         setupToolbar();
-        setupVolley();
         API_KEY = getString(R.string.api_key);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDatabaseDAO.close();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
+        int CURRENT_LOADER_ID = DatabaseLoader.LOADER_ID;
+        loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks);
+    }
+
+
+    private void setupDatabase() {
+        mDatabaseDAO = new DatabaseDAO(this);
+        mDatabaseDAO.open();
     }
 
     /**
@@ -123,9 +164,16 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                         return true;
                     } else {
                         mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
-                        mShow.setSeason(mSeasonEditText.getText().toString());
+                        mShow.setSeasonsNumber(mSeasonEditText.getText().toString());
+                        mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
+
+                        //set show id to be the same with the database id
+                        //so it can be deleted easily
+                        int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(), String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl());
+                        mShow.setId(databaseId);
                         mMoviesListAdapter.add(mShow);
 
+                        //add to database
                         resetEditTexts();
                         closeSoftKeyboard();
                         mSeasonEditText.clearFocus();
@@ -139,6 +187,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         });
     }
 
+    /**
+     * Close the keyboard automatically
+     */
     private void closeSoftKeyboard() {
         if (getCurrentFocus() != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -190,35 +241,90 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mMoviesList = (RecyclerView) findViewById(R.id.movies_list);
         mSeasonEditText = (EditText) findViewById(R.id.seasons_edit_text);
         mSeasonEditText.setVisibility(View.GONE);
-        mDaysSpent = (TextView)findViewById(R.id.days);
-        mHoursSpent = (TextView)findViewById(R.id.hours);
-        mMinutesSpent = (TextView)findViewById(R.id.minutes);
-    }
-
-
-    /**
-     * Setup volley library for http calls
-     */
-    private void setupVolley() {
-        requestQueue = VolleyRequestQueueSingletone.getInstance(this).getRequestQueue();
+        mDaysSpent = (TextView) findViewById(R.id.days);
+        mHoursSpent = (TextView) findViewById(R.id.hours);
+        mMinutesSpent = (TextView) findViewById(R.id.minutes);
     }
 
     /**
-     * Setup the toolbar
+     * Setup the mToolbar
      */
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
     }
 
     /**
-     * Called when drop down suggestion list is clicked
+     * Calculate the total time spent from one show
      *
      * @param show The show
+     * @return int minutes
      */
+    private int calculateTimeForOneShow(TvShow show) {
+        int minutes = 0;
+        for (int i = 0; i < Integer.parseInt(show.getNumberOfSeasons()); i++) {
+            if (show.getEpisodesRunTime().size() > 0) {
+                int timePerSeason = Integer.parseInt(show.getEpisodesRunTime().get(0)) * Integer.parseInt(show.getSeasonsEpisodesNumber().get(String.valueOf(i)));
+                minutes += timePerSeason;
+            }
+        }
+        return minutes;
+    }
+
+    /**
+     * Calculate the total time spent
+     *
+     * @return A list<string> of time {day, hours, minutes}
+     */
+    private List<String> calculateTimeSpent() {
+        List<TvShow> showList = mMoviesListAdapter.getData();
+
+        int totalMinutes = 0;
+        for (TvShow show : showList) {
+            totalMinutes += show.getMinutesTotalTime();
+        }
+
+        int seconds = totalMinutes * 60;
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        List<String> result = new ArrayList<>();
+        result.add(String.valueOf(day));
+        result.add(String.valueOf(hours));
+        result.add(String.valueOf(minute));
+
+        return result;
+    }
+
+    /**
+     * Set the time on ui
+     *
+     * @param timeList The list<string> of time {day, hours, minutes}
+     */
+    private void setTime(List<String> timeList) {
+        mDaysSpent.setText(timeList.get(0));
+        mHoursSpent.setText(timeList.get(1));
+        mMinutesSpent.setText(timeList.get(2));
+    }
+
     @Override
-    public void onSuggestionClick(TvShow show) {
-        mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (this.mDoubleBackToExitPressedOnce) {
+            finish();
+            return;
+        }
+
+        mDoubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.toast_double_back_click), Toast.LENGTH_SHORT).show();
+
+        mHandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                MainActivity.this.mDoubleBackToExitPressedOnce = false;
+            }
+        }, 1000);
     }
 
     /**
@@ -236,44 +342,40 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mSeasonEditText.requestFocus();
     }
 
-    private List<String> calculateTimeSpent() {
-        List<TvShow> showList = mMoviesListAdapter.getData();
-
-        int minutes = 0;
-
-        for (TvShow show : showList) {
-            for (int i =0; i < Integer.parseInt(show.getNumberOfSeasons()); i++) {
-                if(show.getEpisodesRunTime().size() > 0){
-                    int timePerSeason = Integer.parseInt(show.getEpisodesRunTime().get(0)) * Integer.parseInt(show.getSeasonsEpisodesNumber().get(String.valueOf(i)));
-                    minutes += timePerSeason;
-                }
-            }
-
-        }
-
-        int seconds = minutes * 60;
-        int day = (int) TimeUnit.SECONDS.toDays(seconds);
-        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
-        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
-        List<String> result = new ArrayList<>();
-        result.add(String.valueOf(day));
-        result.add(String.valueOf(hours));
-        result.add(String.valueOf(minute));
-
-        return result;
-    }
-
     /**
      * Recalculate the time when deleted one movie
      */
     @Override
-    public void onDeleteMovie() {
+    public void onDeleteMovie(int id) {
+        setTime(calculateTimeSpent());
+        mDatabaseDAO.deleteTvShow(id);
+    }
+
+    /**
+     * Called when drop down suggestion list is clicked
+     *
+     * @param show The show
+     */
+    @Override
+    public void onSuggestionClickListener(TvShow show) {
+        mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
+    }
+
+    /**Loader listeners*/
+    @Override
+    public Loader<List<TvShow>> onCreateLoader(int id, Bundle args) {
+        return new DatabaseLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<TvShow>> loader, List<TvShow> data) {
+        mMoviesListAdapter.addAll(data);
         setTime(calculateTimeSpent());
     }
 
-    private void setTime(List<String> timeList){
-        mDaysSpent.setText(timeList.get(0));
-        mHoursSpent.setText(timeList.get(1));
-        mMinutesSpent.setText(timeList.get(2));
+    @Override
+    public void onLoaderReset(Loader<List<TvShow>> loader) {
+
     }
+
 }

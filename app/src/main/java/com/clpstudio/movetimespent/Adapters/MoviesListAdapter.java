@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.Adapters;
+package com.clpstudio.movetimespent.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -37,7 +37,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      * Interface for when we delete an movie
      */
     public interface OnDeletedMovie{
-        void onDeleteMovie();
+        void onDeleteMovie(int position);
     }
 
     /**
@@ -69,6 +69,16 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      */
     public void add(TvShow show){
         mData.add(show);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * add new data as a list of items
+     * @param data The list of data
+     */
+    public void addAll(List<TvShow> data){
+        mData.clear();
+        mData.addAll(data);
         notifyDataSetChanged();
     }
 
@@ -119,9 +129,10 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int id = mData.get(position).getId();
                 mData.remove(position);
                 notifyDataSetChanged();
-                mListener.onDeleteMovie();
+                mListener.onDeleteMovie(id);
             }
         });
 
