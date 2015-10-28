@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.clpstudio.movetimespent.R;
 import com.clpstudio.movetimespent.Utils.UrlConstants;
 import com.clpstudio.movetimespent.model.TvShow;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

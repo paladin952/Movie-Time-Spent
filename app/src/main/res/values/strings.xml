@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Move Time Spent</string>
+    <string name="app_name">Movie Time Spent</string>
     <string name="action_settings">Settings</string>
 
     <!-- Database api-->
@@ -9,12 +9,20 @@
     <string name="hint_seasons_standard">Seasons number</string>
     <string name="hint_autocomplete_standard">"Enter show title"</string>
 
+    <!-- facebook-->
+    <string name="facebook_app_id">533110466846613</string>
+    <string name="facebook_title">Try it!</string>
+    <string name="facebook_description">Movie Time Spent app from Android</string>
+    <string name="facebook">Facebook</string>
 
+    <!-- link to google play app-->
+    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.flash</string>
 
     <!-- Errors-->
     <string name="no_result">No results!</string>
     <string name="incorrect_seasons">Incorrect season number!</string>
 
-    <!-- On vack pressed-->
+    <!-- Toasts-->
+    <string name="toast_no_internet">No internet connection!</string>
     <string name="toast_double_back_click">Please click BACK again to exit!</string>
 </resources>
