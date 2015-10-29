@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.clpstudio.movetimespent">
+    package="com.clpstudio.tvshowtimespent">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,7 +17,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name="com.clpstudio.tvshowtimespent.ui.activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

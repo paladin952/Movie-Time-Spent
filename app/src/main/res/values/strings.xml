@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Movie Time Spent</string>
+    <string name="app_name">Tv Show Time Spent</string>
     <string name="action_settings">Settings</string>
 
     <!-- Database api-->
@@ -12,15 +12,16 @@
     <!-- facebook-->
     <string name="facebook_app_id">533110466846613</string>
     <string name="facebook_title">Try it!</string>
-    <string name="facebook_description">Movie Time Spent app from Android</string>
+    <string name="facebook_description">Tv Show Time Spent app from Android</string>
     <string name="facebook">Facebook</string>
 
     <!-- link to google play app-->
-    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.flash</string>
+    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.tvshowtimespent</string>
 
     <!-- Errors-->
     <string name="no_result">No results!</string>
     <string name="incorrect_seasons">Incorrect season number!</string>
+    <string name="permission_error">You can\'t use the app without that permission!</string>
 
     <!-- Toasts-->
     <string name="toast_no_internet">No internet connection!</string>

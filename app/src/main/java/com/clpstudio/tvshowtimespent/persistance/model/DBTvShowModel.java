@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.persistance.model;
+package com.clpstudio.tvshowtimespent.persistance.model;
 
 /**
  * Created by lclapa on 10/28/2015.

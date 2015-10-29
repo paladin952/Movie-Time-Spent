@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.Utils;
+package com.clpstudio.tvshowtimespent.Utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
-import com.clpstudio.movetimespent.R;
+import com.clpstudio.tvshowtimespent.R;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 

@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.network;
+package com.clpstudio.tvshowtimespent.network;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,9 +9,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
-import com.clpstudio.movetimespent.Utils.UrlConstants;
-import com.clpstudio.movetimespent.model.TvShow;
-import com.clpstudio.movetimespent.ui.activities.MainActivity;
+import com.clpstudio.tvshowtimespent.Utils.UrlConstants;
+import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.clpstudio.tvshowtimespent.ui.activities.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;

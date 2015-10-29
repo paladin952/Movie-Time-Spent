@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.network;
+package com.clpstudio.tvshowtimespent.network;
 
 import android.content.Context;
 

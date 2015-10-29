@@ -1,11 +1,11 @@
-package com.clpstudio.movetimespent.loaders;
+package com.clpstudio.tvshowtimespent.loaders;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.clpstudio.movetimespent.model.TvShow;
-import com.clpstudio.movetimespent.persistance.DBHelper;
-import com.clpstudio.movetimespent.persistance.DatabaseDAO;
+import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.clpstudio.tvshowtimespent.persistance.DBHelper;
+import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
 
 import java.util.List;
 

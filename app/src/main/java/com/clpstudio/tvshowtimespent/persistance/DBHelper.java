@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.persistance;
+package com.clpstudio.tvshowtimespent.persistance;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

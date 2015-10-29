@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.model;
+package com.clpstudio.tvshowtimespent.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

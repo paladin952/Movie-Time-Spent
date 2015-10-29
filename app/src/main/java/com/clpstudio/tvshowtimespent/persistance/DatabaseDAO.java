@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.persistance;
+package com.clpstudio.tvshowtimespent.persistance;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.clpstudio.movetimespent.model.TvShow;
-import com.clpstudio.movetimespent.persistance.model.DBTvShowModel;
+import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.clpstudio.tvshowtimespent.persistance.model.DBTvShowModel;
 
 import java.util.ArrayList;
 import java.util.List;

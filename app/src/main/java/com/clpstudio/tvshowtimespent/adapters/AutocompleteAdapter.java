@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent.adapters;
+package com.clpstudio.tvshowtimespent.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,9 +10,9 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.clpstudio.movetimespent.R;
-import com.clpstudio.movetimespent.model.TvShow;
-import com.clpstudio.movetimespent.network.DatabaseSuggestionsRetriever;
+import com.clpstudio.tvshowtimespent.R;
+import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.clpstudio.tvshowtimespent.network.DatabaseSuggestionsRetriever;
 
 import java.util.ArrayList;
 import java.util.List;
