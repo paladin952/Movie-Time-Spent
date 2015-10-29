@@ -1,4 +1,29 @@
 <resources>
-    <string name="app_name">Move Time Spent</string>
+    <string name="app_name">Tv Show Time Spent</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Database api-->
+    <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
+
+    <!-- Edit text hints-->
+    <string name="hint_seasons_standard">Seasons number</string>
+    <string name="hint_autocomplete_standard">"Enter show title"</string>
+
+    <!-- facebook-->
+    <string name="facebook_app_id">533110466846613</string>
+    <string name="facebook_title">Try it!</string>
+    <string name="facebook_description">Tv Show Time Spent app from Android</string>
+    <string name="facebook">Facebook</string>
+
+    <!-- link to google play app-->
+    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.tvshowtimespent</string>
+
+    <!-- Errors-->
+    <string name="no_result">No results!</string>
+    <string name="incorrect_seasons">Incorrect season number!</string>
+    <string name="permission_error">You can\'t use the app without that permission!</string>
+
+    <!-- Toasts-->
+    <string name="toast_no_internet">No internet connection!</string>
+    <string name="toast_double_back_click">Please click BACK again to exit!</string>
 </resources>

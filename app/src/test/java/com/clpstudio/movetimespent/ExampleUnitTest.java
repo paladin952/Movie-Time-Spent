@@ -1,4 +1,4 @@
-package com.clpstudio.movetimespent;
+package com.clpstudio.tvshowtimespent;
 
 import org.junit.Test;
 

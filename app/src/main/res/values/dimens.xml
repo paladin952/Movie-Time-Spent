@@ -6,6 +6,12 @@
 
     <!-- Autocomplet text view width-->
     <dimen name="autocomplete_width">150dp</dimen>
+    
+    <!-- Card view height-->
+    <dimen name="card_view_size">175dp</dimen>
+
+    <!-- Remove button size-->
+    <dimen name="remove_image">35dp</dimen>
 
     <!-- Base dimension-->
     <dimen name="BU_1">12dp</dimen>
@@ -16,4 +22,6 @@
     <dimen name="BU_2">24dp</dimen>
     <dimen name="BU_3">36dp</dimen>
     <dimen name="BU_1.5">18dp</dimen>
+
+
 </resources>

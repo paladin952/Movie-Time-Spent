@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_view_size">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/BU_2"
+            android:text="title"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/seasons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/BU_2"
+            android:text="seasons"
+            android:textColor="@android:color/white" />
+
+        <ImageButton
+            android:layout_marginTop="@dimen/BU_1_2"
+            android:layout_marginRight="@dimen/BU_1_2"
+            android:layout_alignParentRight="true"
+            android:id="@+id/remove_image"
+            android:background="@drawable/ic_remove"
+            android:layout_width="@dimen/remove_image"
+            android:layout_height="@dimen/remove_image" />
+    </RelativeLayout>
+
+</FrameLayout>
