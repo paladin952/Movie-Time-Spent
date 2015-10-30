@@ -1,6 +1,7 @@
 <resources>
+    <!-- names-->
     <string name="app_name">Tv Show Time Spent</string>
-    <string name="action_settings">Settings</string>
+    <string name="about_activity_name">About us</string>
 
     <!-- Database api-->
     <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
@@ -13,17 +14,27 @@
     <string name="facebook_app_id">533110466846613</string>
     <string name="facebook_title">Try it!</string>
     <string name="facebook_description">Tv Show Time Spent app from Android</string>
-    <string name="facebook">Facebook</string>
 
-    <!-- link to google play app-->
-    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.tvshowtimespent</string>
+    <!-- toolbar-->
+    <string name="facebook">Facebook</string>
+    <string name="about">About</string>
+
+    <!-- links-->
+    <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.movetimespent</string>
+    <string name="the_movie_db_link">http://www.themoviedb.org</string>
 
     <!-- Errors-->
     <string name="no_result">No results!</string>
     <string name="incorrect_seasons">Incorrect season number!</string>
     <string name="permission_error">You can\'t use the app without that permission!</string>
-
-    <!-- Toasts-->
     <string name="toast_no_internet">No internet connection!</string>
     <string name="toast_double_back_click">Please click BACK again to exit!</string>
+    <string name="title_activity_about">AboutActivity</string>
+
+    <!-- About-->
+    <string name="about_us">Created by Clp Studio\nPowered by www.themoviedb.org</string>
+
+    <!-- Actions-->
+    <string name="go_to_site">GO TO SITE</string>
+
 </resources>

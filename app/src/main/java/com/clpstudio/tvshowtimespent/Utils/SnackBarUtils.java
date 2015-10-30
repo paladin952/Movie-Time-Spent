@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
 
-/**
- * Created by lclapa on 10/29/2015.
- */
 public class SnackBarUtils {
 
     public static void snackError(Context context, CoordinatorLayout coordinatorLayout, String message){

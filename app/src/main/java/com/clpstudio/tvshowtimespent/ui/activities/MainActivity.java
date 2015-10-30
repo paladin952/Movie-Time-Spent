@@ -4,10 +4,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -50,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
         DatabaseSuggestionsRetriever.OnNetworkLoadFinish,
-        MoviesListAdapter.OnDeletedMovie, LoaderManager.LoaderCallbacks<List<TvShow>> {
+        MoviesListAdapter.OndMovieEventListener, LoaderManager.LoaderCallbacks<List<TvShow>> {
 
     /**
      * Api key
@@ -137,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private ShareDialog mFacebookShareDialog;
 
-
     /**
      * Handler for delay operations
      */
@@ -190,17 +191,15 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * Request for permissions
      */
     private void checkForInternetPermission() {
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PERMISSION_INTERNET_REQUEST_CODE);
         }
-
     }
 
     /**
      * request accesse internet permission
      */
-    private void checkForAccesseInternetPermission(){
+    private void checkForAcceseInternetPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, PERMISSION_INTERNET_REQUEST_CODE);
         }
@@ -210,9 +209,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
             case PERMISSION_INTERNET_REQUEST_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //yuhuuu, go on
-                }else{ //ups, no access
+                if( !(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
                     mHandler.postDelayed(new Runnable() {
                         @Override
@@ -223,9 +220,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 }
                 break;
             case PERMISSION_ACCESSE_NETWORK_STATE_REQUEST_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //yuhuuu, go on
-                }else{ //ups, no access
+                if( !(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
                     mHandler.postDelayed(new Runnable() {
                         @Override
@@ -293,16 +288,28 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_share_facebook) {
-            checkForAccesseInternetPermission();
-            if (NetworkUtils.isNetworkAvailable(this)) {
-                FacebookUtils.shareLinkOnFacebook(this, mFacebookShareDialog, mDaysSpent.getText().toString(), mHoursSpent.getText().toString(), mMinutesSpent.getText().toString());
-            } else {
-                SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.toast_no_internet));
-            }
-            return true;
-        }
 
+        switch (item.getItemId()){
+            case R.id.action_share_facebook:
+                checkForAcceseInternetPermission();
+                if (NetworkUtils.isNetworkAvailable(this)) {
+                    FacebookUtils.shareLinkOnFacebook(this, mFacebookShareDialog, mDaysSpent.getText().toString(), mHoursSpent.getText().toString(), mMinutesSpent.getText().toString());
+                } else {
+                    SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.toast_no_internet));
+                }
+                return true;
+            case R.id.action_about:
+                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, getString(R.string.about_us), Snackbar.LENGTH_LONG);
+                snackbar.setAction(getString(R.string.go_to_site), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.the_movie_db_link)));
+                        startActivity(browserIntent);
+                    }
+                });
+                snackbar.show();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -322,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    checkForAccesseInternetPermission();
+                    checkForAcceseInternetPermission();
                     if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
                         Integer showSeasonsCount = Integer.parseInt(mShow.getNumberOfSeasons());
                         Integer userInput = Integer.parseInt(mSeasonEditText.getText().toString());
@@ -518,6 +525,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     public void onDeleteMovie(int id) {
         setTime(calculateTimeSpent());
         mDatabaseDAO.deleteTvShow(id);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        mMoviesList.smoothScrollToPosition(position);
     }
 
     /**

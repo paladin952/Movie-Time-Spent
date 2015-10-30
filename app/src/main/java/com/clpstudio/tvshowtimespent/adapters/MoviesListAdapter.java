@@ -36,20 +36,22 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     /**
      * Interface for when we delete an movie
      */
-    public interface OnDeletedMovie{
+    public interface OndMovieEventListener {
         void onDeleteMovie(int position);
+
+        void onItemClick(int position);
     }
 
     /**
      * Listener
      */
-    private OnDeletedMovie mListener;
+    private OndMovieEventListener mListener;
 
     /**
      * The constructor
      * @param mContext The context
      */
-    public MoviesListAdapter(Context mContext, OnDeletedMovie listener) {
+    public MoviesListAdapter(Context mContext, OndMovieEventListener listener) {
         this.mContext = mContext;
         this.mData= new ArrayList<>();
         this.mListener = listener;
@@ -123,6 +125,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
                 }else{
                     setRemoveVisibility(position);
                 }
+                mListener.onItemClick(position);
             }
         });
 
