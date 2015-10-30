@@ -7,6 +7,7 @@ import com.clpstudio.tvshowtimespent.model.TvShow;
 import com.clpstudio.tvshowtimespent.persistance.DBHelper;
 import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,8 +29,9 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
 
     @Override
     public List<TvShow> loadInBackground() {
-        DBHelper dbHelper = DBHelper.getInstance(context);
         data = query();
+        /**show the items based on the order chosen by the user and stored in database*/
+        Collections.sort(data);
         return data;
     }
 
@@ -68,12 +70,6 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
 
     @Override
     protected void onStartLoading() {
-        if (data != null) {
-            // Deliver any previously loaded data immediately.
-            deliverResult(data);
-        }
-
-
         if (takeContentChanged() || data == null) {
             // When the observer detects a change, it should call onContentChanged()
             // on the Loader, which will cause the next call to takeContentChanged()

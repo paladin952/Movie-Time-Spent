@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:mContext="sciencecalculator.clpstudio.com.sciencecalculator.ui.activities.MainActivity">
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_action_about"
+        app:showAsAction="always"
+        android:title="@string/about" />
+
     <item
         android:id="@+id/action_share_facebook"
         android:orderInCategory="1"

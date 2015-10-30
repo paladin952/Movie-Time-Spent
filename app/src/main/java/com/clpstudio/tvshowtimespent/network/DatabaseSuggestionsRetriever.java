@@ -51,7 +51,7 @@ public class DatabaseSuggestionsRetriever {
     }
 
     public List<TvShow> getTvShowsSuggestions(String name) {
-        String url = UrlConstants.SEARCH_TV_BASE + name + UrlConstants.API_KEY;
+        String url = UrlConstants.SEARCH_TV_BASE + name + UrlConstants.API_KEY_PARAMETER;
         url = url.replace(" ", "%20");
         final List<TvShow> data = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class DatabaseSuggestionsRetriever {
 
     public void getTvShowById(final String id, final OnNetworkLoadFinish listener) {
 
-        final String url = UrlConstants.FIND_SHOW_BY_ID + id + "?api_key=" + MainActivity.API_KEY;
+        final String url = UrlConstants.FIND_SHOW_BY_ID + id + "?api_key=" + UrlConstants.API_KEY;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override

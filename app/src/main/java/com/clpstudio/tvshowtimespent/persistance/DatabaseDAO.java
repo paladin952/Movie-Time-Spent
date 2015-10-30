@@ -36,7 +36,8 @@ public class DatabaseDAO {
             DBHelper.COLUMN_SHOW_NAME,
             DBHelper.COLUMN_SHOW_SEASONS_NUMBER,
             DBHelper.COLUMN_SHOW_TIME_SPENT,
-            DBHelper.COLUMN_IMAGE_URL
+            DBHelper.COLUMN_IMAGE_URL,
+            DBHelper.COLUMN_POSITION_IN_LIST
     };
 
     /**
@@ -72,12 +73,13 @@ public class DatabaseDAO {
      * @param seasonsNumber The number of seasons to be calculated later
      * @param time          The value
      */
-    public int addTvShowItem(String state, String seasonsNumber, String time, String imageUrl) {
+    public int addTvShowItem(String state, String seasonsNumber, String time, String imageUrl, int positionInList) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.COLUMN_SHOW_NAME, state);
         values.put(DBHelper.COLUMN_SHOW_SEASONS_NUMBER, seasonsNumber);
         values.put(DBHelper.COLUMN_SHOW_TIME_SPENT, time);
         values.put(DBHelper.COLUMN_IMAGE_URL, imageUrl);
+        values.put(DBHelper.COLUMN_POSITION_IN_LIST, positionInList);
         long lastInsertedId = mDatabase.insert(DBHelper.TABLE_TV_SHOW_NAME, null, values);
         return (int)lastInsertedId;
     }
@@ -94,17 +96,18 @@ public class DatabaseDAO {
      * Upgrade an item based on id
      *
      * @param id    The item id
-     * @param state The state name
+     * @param name The name
      * @param time The value of item
      * @param imageUrl The url to donwload image
      * @return The row where introduced
      */
-    public int updateCurrencyItem(long id, String state, String seasonsNumber, String time, String imageUrl) {
+    public int updateCurrencyItem(long id, String name, String seasonsNumber, String time, String imageUrl, int positionInList) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DBHelper.COLUMN_SHOW_NAME, state); //These Fields should be your String values of actual column names
+        contentValues.put(DBHelper.COLUMN_SHOW_NAME, name); //These Fields should be your String values of actual column names
         contentValues.put(DBHelper.COLUMN_SHOW_SEASONS_NUMBER, seasonsNumber);
         contentValues.put(DBHelper.COLUMN_SHOW_TIME_SPENT, time);
         contentValues.put(DBHelper.COLUMN_IMAGE_URL, imageUrl);
+        contentValues.put(DBHelper.COLUMN_POSITION_IN_LIST, positionInList);
         return mDatabase.update(DBHelper.TABLE_TV_SHOW_NAME, contentValues, "_id " + "=" + id, null);
     }
 
@@ -143,12 +146,13 @@ public class DatabaseDAO {
         item.setNumberOfSeasons(cursor.getString(2));
         item.setMinutesTotalTime(cursor.getString(3));
         item.setPosterUrl(cursor.getString(4));
-
+        item.setPositionInList(cursor.getInt(5));
         //now convert it to TvShow type
         TvShow resultTvShow = new TvShow(item.getDbId(), item.getName());
         resultTvShow.setMinutesTotalTime(Integer.parseInt(item.getMinutesTotalTime()));
         resultTvShow.setSeasonsNumber(item.getNumberOfSeasons());
         resultTvShow.setPosterUrl(item.getPosterUrl());
+        resultTvShow.setPositionInList(item.getPositionInList());
         return resultTvShow;
     }
 }

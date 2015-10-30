@@ -1,6 +1,9 @@
 package com.clpstudio.tvshowtimespent.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +11,7 @@ import java.util.Map;
 /**
  * Created by lclapa on 10/26/2015.
  */
-public class TvShow {
+public class TvShow implements Comparable<TvShow>{
 
     /**
      * The id
@@ -60,6 +63,12 @@ public class TvShow {
      * The total time of the movie in minutes
      */
     private int mMinutesTotalTime;
+
+    /**
+     * The position in list
+     * important to know after getting the info from database
+     */
+    private int mPositionInList;
 
     /**
      * The constructor
@@ -152,5 +161,29 @@ public class TvShow {
 
     public void setMinutesTotalTime(int mMinutesTotalTime) {
         this.mMinutesTotalTime = mMinutesTotalTime;
+    }
+
+    public int getPositionInList(){
+        return mPositionInList;
+    }
+
+    public void setPositionInList(int positionInList){
+        this.mPositionInList = positionInList;
+    }
+
+
+    /**
+     * Compare based on the order chosen by the user and stored in database
+     * @param another The other object to be compared to
+     * @return -1 for less than the other, 1 for greater than, 0 for equal
+     */
+    @Override
+    public int compareTo(@NonNull TvShow another) {
+        if(mPositionInList < another.getPositionInList()){
+            return -1;
+        }else if(mPositionInList > another.getPositionInList()){
+            return 1;
+        }
+        return 0;
     }
 }
