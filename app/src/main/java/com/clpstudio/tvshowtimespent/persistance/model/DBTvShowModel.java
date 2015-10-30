@@ -30,6 +30,19 @@ public class DBTvShowModel {
      */
     private String mPosterUrl;
 
+    /**
+     * Position in list
+     */
+    private int mPositionInList;
+
+    public int getPositionInList(){
+        return mPositionInList;
+    }
+
+    public void setPositionInList(int positionInList){
+        this.mPositionInList = positionInList;
+    }
+
     public String getName() {
         return mName;
     }

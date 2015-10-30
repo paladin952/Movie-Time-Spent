@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * The database version
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     /**
      * Currency table name
@@ -45,6 +45,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SHOW_TIME_SPENT = "Time";
 
     /**
+     * The position in list
+     */
+    public static final String COLUMN_POSITION_IN_LIST = "PositionInList";
+
+    /**
      * Column for images url
      */
     public static final String COLUMN_IMAGE_URL = "ImageUrl";
@@ -63,8 +68,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_SHOW_NAME + " text, "
             + COLUMN_SHOW_SEASONS_NUMBER + " text, "
             + COLUMN_SHOW_TIME_SPENT + " text, "
-            + COLUMN_IMAGE_URL + " text);";
-
+            + COLUMN_IMAGE_URL + " text,"
+            + COLUMN_POSITION_IN_LIST + " integer);";
 
     /**
      * Private constructor for singleton

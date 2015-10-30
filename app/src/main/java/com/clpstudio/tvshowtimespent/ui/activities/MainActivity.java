@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,13 +41,11 @@ import com.clpstudio.tvshowtimespent.network.DatabaseSuggestionsRetriever;
 import com.clpstudio.tvshowtimespent.network.NetworkUtils;
 import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -164,6 +163,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private static final int ONE_SECOND = 1000;
 
+    /**
+     * To know when there are position changes in list
+     */
+    private boolean mPositionChanged;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,9 +186,34 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     }
 
     @Override
+    protected void onDestroy() {
+        mDatabaseDAO.close();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         checkForInternetPermission();
+        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
+        int CURRENT_LOADER_ID = DatabaseLoader.LOADER_ID;
+        loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks).forceLoad();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        /**If are changes in list must be stored in database*/
+        if(mPositionChanged){
+            /**recalculate each show the position in db*/
+            mMoviesListAdapter.reorderPosition();
+            for(TvShow show : mMoviesListAdapter.getData()){
+                mDatabaseDAO.updateCurrencyItem(show.getId(), show.getName(), show.getNumberOfSeasons(),
+                        String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
+            }
+            mPositionChanged = false;
+        }
     }
 
     /**
@@ -233,20 +262,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        mDatabaseDAO.close();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
-        int CURRENT_LOADER_ID = DatabaseLoader.LOADER_ID;
-        loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks);
-    }
-
     /**
      * Setup for facebook sharing
      */
@@ -254,22 +269,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         FacebookSdk.sdkInitialize(this);
         mFacebookShareDialog = new ShareDialog(this);
         callbackManager = CallbackManager.Factory.create();
-
-        mFacebookShareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-
-            }
-
-            @Override
-            public void onCancel() {
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
     }
 
     @Override
@@ -343,7 +342,8 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
                             //set show id to be the same with the database id
                             //so it can be deleted easily
-                            int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(), String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl());
+                            int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(),
+                                    String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl(), mMoviesListAdapter.getItemCount());
                             mShow.setId(databaseId);
                             mMoviesListAdapter.add(mShow);
 
@@ -362,6 +362,52 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 return false;
             }
         });
+
+        ItemTouchHelper.Callback itemMoveCallbacks = new ItemTouchHelper.Callback() {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Collections.swap(mMoviesListAdapter.getData(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                mMoviesListAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                mPositionChanged = true;
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                //TODO
+            }
+
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP);
+            }
+        };
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getAdapterPosition();
+                int databaseId = mMoviesListAdapter.getData().get(position).getId();
+
+                mMoviesListAdapter.deleteItem(position);
+                mDatabaseDAO.deleteTvShow(databaseId);
+
+                setTime(calculateTimeSpent());
+                mPositionChanged = true;
+
+            }
+        };
+
+        ItemTouchHelper itemSwipeHelper = new ItemTouchHelper(itemMoveCallbacks);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+
+        itemSwipeHelper.attachToRecyclerView(mMoviesList);
+        itemTouchHelper.attachToRecyclerView(mMoviesList);
     }
 
     /**
@@ -516,15 +562,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mSeasonEditText.setVisibility(View.VISIBLE);
         mSeasonEditText.setHint("1 - " + show.getNumberOfSeasons());
         mSeasonEditText.requestFocus();
-    }
-
-    /**
-     * Recalculate the time when deleted one movie
-     */
-    @Override
-    public void onDeleteMovie(int id) {
-        setTime(calculateTimeSpent());
-        mDatabaseDAO.deleteTvShow(id);
     }
 
     @Override

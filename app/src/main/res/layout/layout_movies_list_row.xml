@@ -35,14 +35,6 @@
             android:text="seasons"
             android:textColor="@android:color/white" />
 
-        <ImageButton
-            android:layout_marginTop="@dimen/BU_1_2"
-            android:layout_marginRight="@dimen/BU_1_2"
-            android:layout_alignParentRight="true"
-            android:id="@+id/remove_image"
-            android:background="@drawable/ic_remove"
-            android:layout_width="@dimen/remove_image"
-            android:layout_height="@dimen/remove_image" />
     </RelativeLayout>
 
 </FrameLayout>

@@ -11,6 +11,12 @@ import com.clpstudio.tvshowtimespent.R;
 
 public class SnackBarUtils {
 
+    /**
+     * creates an snackbar with red background
+     * @param context The context
+     * @param coordinatorLayout The coordinator layout
+     * @param message The message
+     */
     public static void snackError(Context context, CoordinatorLayout coordinatorLayout, String message){
         Snackbar snackbar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT);
         View view = snackbar.getView();
@@ -21,6 +27,11 @@ public class SnackBarUtils {
         snackbar.show();
     }
 
+    /**
+     * creates a standard snake bar with grey background
+     * @param coordinatorLayout The coordinator layout
+     * @param message The message
+     */
     public static void snackStandard(CoordinatorLayout coordinatorLayout, String message){
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).show();
     }
