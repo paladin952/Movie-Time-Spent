@@ -54,11 +54,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         MoviesListAdapter.OndMovieEventListener, LoaderManager.LoaderCallbacks<List<TvShow>> {
 
     /**
-     * Api key
-     */
-    public static String API_KEY;
-
-    /**
      * The mToolbar
      */
     private Toolbar mToolbar;
@@ -182,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         setupListeners();
         setupToolbar();
         setupFacebookSdk();
-        API_KEY = getString(R.string.api_key);
     }
 
     @Override
@@ -195,9 +189,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     protected void onResume() {
         super.onResume();
         checkForInternetPermission();
-        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
-        int CURRENT_LOADER_ID = DatabaseLoader.LOADER_ID;
-        loaderManager.initLoader(CURRENT_LOADER_ID, null, mCallbacks).forceLoad();
+        getSupportLoaderManager().initLoader(DatabaseLoader.LOADER_ID, null, mCallbacks).forceLoad();
     }
 
     @Override
@@ -205,10 +197,10 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         super.onPause();
 
         /**If are changes in list must be stored in database*/
-        if(mPositionChanged){
+        if (mPositionChanged) {
             /**recalculate each show the position in db*/
             mMoviesListAdapter.reorderPosition();
-            for(TvShow show : mMoviesListAdapter.getData()){
+            for (TvShow show : mMoviesListAdapter.getData()) {
                 mDatabaseDAO.updateCurrencyItem(show.getId(), show.getName(), show.getNumberOfSeasons(),
                         String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
             }
@@ -220,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * Request for permissions
      */
     private void checkForInternetPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PERMISSION_INTERNET_REQUEST_CODE);
         }
     }
@@ -228,17 +220,17 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     /**
      * request accesse internet permission
      */
-    private void checkForAcceseInternetPermission(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED){
+    private void checkForAcceseInternetPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, PERMISSION_INTERNET_REQUEST_CODE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case PERMISSION_INTERNET_REQUEST_CODE:
-                if( !(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
                     mHandler.postDelayed(new Runnable() {
                         @Override
@@ -249,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 }
                 break;
             case PERMISSION_ACCESSE_NETWORK_STATE_REQUEST_CODE:
-                if( !(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
                     mHandler.postDelayed(new Runnable() {
                         @Override
@@ -277,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -287,8 +278,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_share_facebook:
                 checkForAcceseInternetPermission();
                 if (NetworkUtils.isNetworkAvailable(this)) {
@@ -302,8 +292,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 snackbar.setAction(getString(R.string.go_to_site), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.the_movie_db_link)));
-                        startActivity(browserIntent);
+                        if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.the_movie_db_link)));
+                            startActivity(browserIntent);
+                        } else {
+                            SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.toast_no_internet));
+                        }
                     }
                 });
                 snackbar.show();
@@ -329,31 +323,36 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     checkForAcceseInternetPermission();
+                    String text = mSeasonEditText.getText().toString();
                     if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
-                        Integer showSeasonsCount = Integer.parseInt(mShow.getNumberOfSeasons());
-                        Integer userInput = Integer.parseInt(mSeasonEditText.getText().toString());
-                        if (showSeasonsCount < userInput || userInput < 1) {
-                            SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.incorrect_seasons));
-                            return true;
-                        } else {
-                            mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
-                            mShow.setSeasonsNumber(mSeasonEditText.getText().toString());
-                            mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
+                        if (!text.isEmpty()) {
+                            Integer showSeasonsCount = Integer.parseInt(mShow.getNumberOfSeasons());
+                            Integer userInput = Integer.parseInt(text);
+                            if (showSeasonsCount < userInput || userInput < 1) {
+                                SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.incorrect_seasons));
+                                return true;
+                            } else {
+                                mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
+                                mShow.setSeasonsNumber(mSeasonEditText.getText().toString());
+                                mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
 
-                            //set show id to be the same with the database id
-                            //so it can be deleted easily
-                            int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(),
-                                    String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl(), mMoviesListAdapter.getItemCount());
-                            mShow.setId(databaseId);
-                            mMoviesListAdapter.add(mShow);
+                                //set show id to be the same with the database id
+                                //so it can be deleted easily
+                                int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(),
+                                        String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl(), mMoviesListAdapter.getItemCount());
+                                mShow.setId(databaseId);
+                                mMoviesListAdapter.add(mShow);
 
-                            //add to database
-                            resetEditTexts();
-                            closeSoftKeyboard();
-                            mSeasonEditText.clearFocus();
-                            mAutoCompleteTextView.clearFocus();
-                            setTime(calculateTimeSpent());
-                            return true;
+                                //add to database
+                                resetEditTexts();
+                                closeSoftKeyboard();
+                                mSeasonEditText.clearFocus();
+                                mAutoCompleteTextView.clearFocus();
+                                setTime(calculateTimeSpent());
+                                return true;
+                            }
+                        }else{
+                            
                         }
                     } else {
                         SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.toast_no_internet));
@@ -363,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             }
         });
 
+        /**listener for drag and drop*/
         ItemTouchHelper.Callback itemMoveCallbacks = new ItemTouchHelper.Callback() {
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 Collections.swap(mMoviesListAdapter.getData(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
@@ -383,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             }
         };
 
+        /**listener for swipe*/
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -403,11 +404,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             }
         };
 
-        ItemTouchHelper itemSwipeHelper = new ItemTouchHelper(itemMoveCallbacks);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(itemMoveCallbacks);
+        ItemTouchHelper swipeHelper = new ItemTouchHelper(simpleItemTouchCallback);
 
-        itemSwipeHelper.attachToRecyclerView(mMoviesList);
-        itemTouchHelper.attachToRecyclerView(mMoviesList);
+        touchHelper.attachToRecyclerView(mMoviesList);
+        swipeHelper.attachToRecyclerView(mMoviesList);
     }
 
     /**
@@ -467,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mDaysSpent = (TextView) findViewById(R.id.days);
         mHoursSpent = (TextView) findViewById(R.id.hours);
         mMinutesSpent = (TextView) findViewById(R.id.minutes);
-        mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinator_layout);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
     }
 
     /**

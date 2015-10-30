@@ -64,7 +64,7 @@ public class DatabaseSuggestionsRetriever {
             future.get(10, TimeUnit.SECONDS); //block for maximum 10 seconds
             response = future.get();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            //error
+            //no connection, anyway the user will ge no result toast
         }
 
         if (response != null) {
@@ -90,9 +90,7 @@ public class DatabaseSuggestionsRetriever {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("luci", response);
                 try {
-                    Log.d("luci", response);
                     JSONObject jsonObject = new JSONObject(response);
                     String posterPath = jsonObject.getString("backdrop_path");
                     String name = jsonObject.getString("original_name");

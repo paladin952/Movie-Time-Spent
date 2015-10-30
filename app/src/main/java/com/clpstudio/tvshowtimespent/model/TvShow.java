@@ -83,6 +83,10 @@ public class TvShow implements Comparable<TvShow>{
         mMinutesTotalTime = 0;
     }
 
+    /**
+     * Get the map containing season name and number of episodes seen by user
+     * @return
+     */
     public Map<String, String> getSeasonsEpisodesNumber() {
         return mSeasonsEpisodes;
     }
@@ -91,6 +95,10 @@ public class TvShow implements Comparable<TvShow>{
         this.mSeasonsEpisodes = mSeasonsEpisodes;
     }
 
+    /**
+     * Get the list of episodes time
+     * @return List<String>
+     */
     public List<String> getEpisodesRunTime() {
         return mEpisodesRunTime;
     }
