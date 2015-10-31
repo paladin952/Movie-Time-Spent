@@ -1,6 +1,7 @@
 package com.clpstudio.tvshowtimespent.adapters;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
+import com.clpstudio.tvshowtimespent.Utils.Constants;
 import com.clpstudio.tvshowtimespent.Utils.UrlConstants;
 import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -107,7 +110,30 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
                         .resize(finalWidth, finalHeight)
                         .centerCrop()
                         .error(R.drawable.ic_no_image)
-                        .into(holder.image);
+                        .into(holder.image, new Callback() {
+                            /**Show the behind view after the image is shown
+                             * Otherwise it will appear first*/
+                            @Override
+                            public void onSuccess() {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        holder.behindView.setVisibility(View.VISIBLE);
+                                    }
+                                }, Constants.ONE_SECOND);
+                            }
+                            /**Show the behind view after the image is shown
+                             * Otherwise it will appear first*/
+                            @Override
+                            public void onError() {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        holder.behindView.setVisibility(View.VISIBLE);
+                                    }
+                                }, Constants.ONE_SECOND);
+                            }
+                        });
 
                 return true;
             }
@@ -161,12 +187,27 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
          */
         private ImageView image;
 
+        /**
+         * The view to be removed on swipe
+         */
+        private View removableView;
+
+        /**
+         * The view behind image
+         */
+        private View behindView;
+
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
             season = (TextView)itemView.findViewById(R.id.seasons);
             image = (ImageView)itemView.findViewById(R.id.image);
+            removableView = itemView.findViewById(R.id.removable);
+            behindView = itemView.findViewById(R.id.behind_view);
+        }
 
+        public View getRemovableView(){
+            return removableView;
         }
     }
 }

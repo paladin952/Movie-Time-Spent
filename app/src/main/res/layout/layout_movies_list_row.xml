@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/card_view_size"
     android:orientation="vertical">
 
     <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/behind_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_red_dark">
+
+        <TextView
+            android:typeface="serif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/BU_2"
+            android:text="@string/delete"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/BU_2" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/removable"
         android:layout_width="match_parent"
         android:layout_height="@dimen/card_view_size">
 
@@ -19,22 +39,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:textStyle="bold"
             android:layout_marginLeft="@dimen/BU_2"
             android:text="title"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/seasons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/BU_2"
             android:text="seasons"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
-</FrameLayout>
+</RelativeLayout>

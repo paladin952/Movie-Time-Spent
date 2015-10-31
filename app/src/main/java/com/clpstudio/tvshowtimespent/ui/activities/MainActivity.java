@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -401,6 +402,26 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 setTime(calculateTimeSpent());
                 mPositionChanged = true;
 
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                getDefaultUIUtil().clearView(((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView());
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                if (viewHolder != null) {
+                    getDefaultUIUtil().onSelected(((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView());
+                }
+            }
+
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                getDefaultUIUtil().onDraw(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
+            }
+
+            public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                getDefaultUIUtil().onDrawOver(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
             }
         };
 
