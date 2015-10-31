@@ -36,5 +36,6 @@
 
     <!-- Actions-->
     <string name="go_to_site">GO TO SITE</string>
+    <string name="delete">Delete</string>
 
 </resources>
