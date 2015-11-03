@@ -416,10 +416,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 }
             }
 
+            @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 getDefaultUIUtil().onDraw(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
             }
 
+            @Override
             public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 getDefaultUIUtil().onDrawOver(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
             }
@@ -582,7 +584,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mAutoCompleteTextView.setText(show.getName());
         mAutoCompleteTextView.dismissDropDown();
         mSeasonEditText.setVisibility(View.VISIBLE);
-        mSeasonEditText.setHint("1 - " + show.getNumberOfSeasons());
+
+        if(show.getNumberOfEpisoades() == 0){
+            mSeasonEditText.setHint(getString(R.string.no_seasons_available));
+        }else{
+            mSeasonEditText.setHint("Seasons 1 - " + show.getNumberOfSeasons());
+        }
         mSeasonEditText.requestFocus();
     }
 

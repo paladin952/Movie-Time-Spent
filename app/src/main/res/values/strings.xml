@@ -30,6 +30,7 @@
     <string name="toast_no_internet">No internet connection!</string>
     <string name="toast_double_back_click">Please click BACK again to exit!</string>
     <string name="title_activity_about">AboutActivity</string>
+    <string name="no_seasons_available">No seasons</string>
 
     <!-- About-->
     <string name="about_us">Created by Clp Studio\nPowered by www.themoviedb.org</string>

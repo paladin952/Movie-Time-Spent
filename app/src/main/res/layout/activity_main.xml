@@ -10,11 +10,12 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/grey_4">
 
-        <include layout="@layout/layout_toolbar"
+        <include
             android:id="@+id/app_bar_layout"
-            />
+            layout="@layout/layout_toolbar" />
 
         <LinearLayout
             android:id="@+id/time_container"
@@ -24,25 +25,27 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_marginLeft="@dimen/BU_2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/BU_2"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="0"
-                    android:layout_gravity="center_horizontal"
                     android:id="@+id/days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="0"
+                    style="@style/WhiteBoldTextView"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
 
                 <TextView
-                    android:layout_gravity="center_horizontal"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:text="Days"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
@@ -55,18 +58,20 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_gravity="center_horizontal"
-                    android:text="0"
                     android:id="@+id/hours"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="0"
+                    style="@style/WhiteBoldTextView"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
 
                 <TextView
-                    android:layout_gravity="center_horizontal"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:text="Hours"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
@@ -80,18 +85,20 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="0"
-                    android:layout_gravity="center_horizontal"
+                    style="@style/WhiteBoldTextView"
                     android:id="@+id/minutes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="0"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
 
                 <TextView
-                    android:layout_gravity="center_horizontal"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:text="Minutes"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
@@ -114,7 +121,6 @@
                 android:layout_marginTop="@dimen/BU_0.9"
                 android:layout_weight="1"
                 android:background="@null"
-                android:singleLine="true"
                 android:completionThreshold="3"
                 android:dropDownAnchor="@+id/autocomplete_list"
                 android:dropDownHorizontalOffset="0dp"
@@ -124,6 +130,9 @@
                 android:imeOptions="actionNone"
                 android:lines="1"
                 android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/dark_petrol"
+                android:textColorHint="@color/dark_petrol"
                 android:typeface="serif" />
 
             <EditText
@@ -140,6 +149,8 @@
                 android:inputType="number"
                 android:lines="1"
                 android:maxLines="1"
+                android:textColor="@color/dark_petrol"
+                android:textColorHint="@color/dark_petrol"
                 android:typeface="serif" />
 
         </LinearLayout>
@@ -161,8 +172,8 @@
             android:layout_below="@id/autocomplete_container"
             android:clickable="true"
             android:scrollbars="vertical" />
-
     </RelativeLayout>
+
 
 
 </android.support.design.widget.CoordinatorLayout>

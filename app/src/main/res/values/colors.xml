@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="grey_6">#d0d0d0</color>
+    <color name="grey_4">#ededed</color>
+    <color name="dark_petrol">#218076</color>
 
     <color name="snackbar_red">#FE2E2E</color>
 </resources>

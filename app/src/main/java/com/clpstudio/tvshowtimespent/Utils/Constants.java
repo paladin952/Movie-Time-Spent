@@ -9,5 +9,4 @@ public class Constants {
      * one second in milliseconds
      */
     public static final int ONE_SECOND = 1000;
-
 }

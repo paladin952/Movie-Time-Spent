@@ -1,6 +1,9 @@
 package com.clpstudio.tvshowtimespent.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
@@ -17,6 +21,7 @@ import com.clpstudio.tvshowtimespent.Utils.UrlConstants;
 import com.clpstudio.tvshowtimespent.model.TvShow;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,13 +95,13 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_movies_list_row, parent, false);
         final MoviesListAdapter.ViewHolder viewHolder = new MoviesListAdapter.ViewHolder(view);
-
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final TvShow show = mData.get(position);
+
         //download image after size was measured for Picasso center crop size
         ViewTreeObserver vto = holder.image.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -110,34 +115,12 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
                         .resize(finalWidth, finalHeight)
                         .centerCrop()
                         .error(R.drawable.ic_no_image)
-                        .into(holder.image, new Callback() {
-                            /**Show the behind view after the image is shown
-                             * Otherwise it will appear first*/
-                            @Override
-                            public void onSuccess() {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        holder.behindView.setVisibility(View.VISIBLE);
-                                    }
-                                }, Constants.ONE_SECOND);
-                            }
-                            /**Show the behind view after the image is shown
-                             * Otherwise it will appear first*/
-                            @Override
-                            public void onError() {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        holder.behindView.setVisibility(View.VISIBLE);
-                                    }
-                                }, Constants.ONE_SECOND);
-                            }
-                        });
+                        .into(holder.image);
 
                 return true;
             }
         });
+
 
         holder.title.setText(show.getName());
         holder.season.setText(show.getNumberOfSeasons() + " seasons");
@@ -152,10 +135,13 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
         notifyDataSetChanged();
     }
 
+
     @Override
     public int getItemCount() {
         return mData.size();
     }
+
+
 
     /**
      * Reset the position to be stored in database as reference to
