@@ -1,6 +1,10 @@
 package com.clpstudio.tvshowtimespent.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +12,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
+import com.clpstudio.tvshowtimespent.Utils.Constants;
 import com.clpstudio.tvshowtimespent.Utils.UrlConstants;
 import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +44,21 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     /**
      * Interface for when we delete an movie
      */
-    public interface OnDeletedMovie{
-        void onDeleteMovie(int position);
+    public interface OndMovieEventListener {
+
+        void onItemClick(int position);
     }
 
     /**
      * Listener
      */
-    private OnDeletedMovie mListener;
+    private OndMovieEventListener mListener;
 
     /**
      * The constructor
      * @param mContext The context
      */
-    public MoviesListAdapter(Context mContext, OnDeletedMovie listener) {
+    public MoviesListAdapter(Context mContext, OndMovieEventListener listener) {
         this.mContext = mContext;
         this.mData= new ArrayList<>();
         this.mListener = listener;
@@ -86,14 +95,12 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_movies_list_row, parent, false);
         final MoviesListAdapter.ViewHolder viewHolder = new MoviesListAdapter.ViewHolder(view);
-
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final TvShow show = mData.get(position);
-
 
         //download image after size was measured for Picasso center crop size
         ViewTreeObserver vto = holder.image.getViewTreeObserver();
@@ -114,53 +121,36 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
             }
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mData.get(position).isShownRemove()){
-                    mData.get(position).setIsShownRemove(false);
-                    holder.remove.setVisibility(View.GONE);
-                }else{
-                    setRemoveVisibility(position);
-                }
-            }
-        });
-
-        holder.remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = mData.get(position).getId();
-                mData.remove(position);
-                notifyDataSetChanged();
-                mListener.onDeleteMovie(id);
-            }
-        });
-
-        if(show.isShownRemove()){
-            holder.remove.setVisibility(View.VISIBLE);
-        }else{
-            holder.remove.setVisibility(View.GONE);
-        }
 
         holder.title.setText(show.getName());
         holder.season.setText(show.getNumberOfSeasons() + " seasons");
     }
+
+    /**
+     * Remove element from list
+     * @param position The position
+     */
+    public void deleteItem(int position){
+        mData.remove(position);
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public int getItemCount() {
         return mData.size();
     }
 
+
+
     /**
-     * set visibility of the remove button
-     * @param position Position
+     * Reset the position to be stored in database as reference to
+     * item position in list
      */
-    private void setRemoveVisibility(int position){
+    public void reorderPosition(){
         for(int i =0; i < mData.size(); i++){
-            mData.get(i).setIsShownRemove(false);
+            mData.get(i).setPositionInList(i);
         }
-        mData.get(position).setIsShownRemove(true);
-        notifyDataSetChanged();
     }
 
     /**
@@ -184,17 +174,26 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
         private ImageView image;
 
         /**
-         * The remove button
+         * The view to be removed on swipe
          */
-        private ImageButton remove;
+        private View removableView;
 
+        /**
+         * The view behind image
+         */
+        private View behindView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.title);
             season = (TextView)itemView.findViewById(R.id.seasons);
             image = (ImageView)itemView.findViewById(R.id.image);
-            remove = (ImageButton)itemView.findViewById(R.id.remove_image);
+            removableView = itemView.findViewById(R.id.removable);
+            behindView = itemView.findViewById(R.id.behind_view);
+        }
+
+        public View getRemovableView(){
+            return removableView;
         }
     }
 }

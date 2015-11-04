@@ -21,6 +21,14 @@
     <dimen name="BU_0.5">6dp</dimen>
     <dimen name="BU_2">24dp</dimen>
     <dimen name="BU_3">36dp</dimen>
+    <dimen name="BU_4">48dp</dimen>
+    <dimen name="BU_5">60dp</dimen>
+    <dimen name="BU_6">72dp</dimen>
+    <dimen name="BU_7">84dp</dimen>
+    <dimen name="BU_8">96dp</dimen>
+    <dimen name="BU_9">108dp</dimen>
+    <dimen name="BU_10">120dp</dimen>
+    <dimen name="BU_11">132dp</dimen>
     <dimen name="BU_1.5">18dp</dimen>
 
 

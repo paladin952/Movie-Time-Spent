@@ -51,7 +51,7 @@ public class DatabaseSuggestionsRetriever {
     }
 
     public List<TvShow> getTvShowsSuggestions(String name) {
-        String url = UrlConstants.SEARCH_TV_BASE + name + UrlConstants.API_KEY;
+        String url = UrlConstants.SEARCH_TV_BASE + name + UrlConstants.API_KEY_PARAMETER;
         url = url.replace(" ", "%20");
         final List<TvShow> data = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class DatabaseSuggestionsRetriever {
             future.get(10, TimeUnit.SECONDS); //block for maximum 10 seconds
             response = future.get();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            //error
+            //no connection, anyway the user will ge no result toast
         }
 
         if (response != null) {
@@ -85,14 +85,12 @@ public class DatabaseSuggestionsRetriever {
 
     public void getTvShowById(final String id, final OnNetworkLoadFinish listener) {
 
-        final String url = UrlConstants.FIND_SHOW_BY_ID + id + "?api_key=" + MainActivity.API_KEY;
+        final String url = UrlConstants.FIND_SHOW_BY_ID + id + "?api_key=" + UrlConstants.API_KEY;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("luci", response);
                 try {
-                    Log.d("luci", response);
                     JSONObject jsonObject = new JSONObject(response);
                     String posterPath = jsonObject.getString("backdrop_path");
                     String name = jsonObject.getString("original_name");
