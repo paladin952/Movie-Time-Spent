@@ -11,7 +11,7 @@
     <string name="hint_autocomplete_standard">"Enter show title"</string>
 
     <!-- facebook-->
-    <string name="facebook_app_id">533110466846613</string>
+    <string name="facebook_app_id">531668810323627</string>
     <string name="facebook_title">Try it!</string>
     <string name="facebook_description">Tv Show Time Spent app from Android</string>
 
@@ -38,5 +38,6 @@
     <!-- Actions-->
     <string name="go_to_site">GO TO SITE</string>
     <string name="delete">Delete</string>
+    <string name="undo">Undo</string>
 
 </resources>

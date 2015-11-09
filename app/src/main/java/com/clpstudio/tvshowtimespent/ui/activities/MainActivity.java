@@ -51,8 +51,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
-        DatabaseSuggestionsRetriever.OnNetworkLoadFinish,
-        MoviesListAdapter.OndMovieEventListener, LoaderManager.LoaderCallbacks<List<TvShow>> {
+        DatabaseSuggestionsRetriever.OnNetworkLoadFinish, MoviesListAdapter.OndMovieEventListener,
+        LoaderManager.LoaderCallbacks<List<TvShow>> {
 
     /**
      * The mToolbar
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     /**
      * Handler for delay operations
      */
-    private Handler mHandler = new Handler();
+    private Handler mDelayHandler = new Handler();
 
     /**
      * The database dao
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             case PERMISSION_INTERNET_REQUEST_CODE:
                 if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
-                    mHandler.postDelayed(new Runnable() {
+                    mDelayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             finish();
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
             case PERMISSION_ACCESSE_NETWORK_STATE_REQUEST_CODE:
                 if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
-                    mHandler.postDelayed(new Runnable() {
+                    mDelayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             finish();
@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         inflater.inflate(R.menu.share_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -352,8 +353,6 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                                 setTime(calculateTimeSpent());
                                 return true;
                             }
-                        }else{
-                            
                         }
                     } else {
                         SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.toast_no_internet));
@@ -393,11 +392,23 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getAdapterPosition();
-                int databaseId = mMoviesListAdapter.getData().get(position).getId();
+                final int position = viewHolder.getAdapterPosition();
+                final int databaseId = mMoviesListAdapter.getData().get(position).getId();
 
+                final TvShow undoShow = mMoviesListAdapter.getData().get(position);
                 mMoviesListAdapter.deleteItem(position);
                 mDatabaseDAO.deleteTvShow(databaseId);
+
+                Snackbar snackbar = Snackbar
+                        .make(mCoordinatorLayout, "\n\n", Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                undo(undoShow, position);
+                            }
+                        });
+                snackbar.show();
+
 
                 setTime(calculateTimeSpent());
                 mPositionChanged = true;
@@ -418,12 +429,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                getDefaultUIUtil().onDraw(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
+                getDefaultUIUtil().onDraw(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY, actionState, isCurrentlyActive);
             }
 
             @Override
             public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                getDefaultUIUtil().onDrawOver(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY,    actionState, isCurrentlyActive);
+                getDefaultUIUtil().onDrawOver(c, recyclerView, (((MoviesListAdapter.ViewHolder) viewHolder).getRemovableView()), dX, dY, actionState, isCurrentlyActive);
             }
         };
 
@@ -432,6 +443,17 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
         touchHelper.attachToRecyclerView(mMoviesList);
         swipeHelper.attachToRecyclerView(mMoviesList);
+    }
+
+    /**
+     * Undo last deleted show
+     *
+     * @param show     The last deleted show
+     * @param position The last position in list
+     */
+    private void undo(TvShow show, int position) {
+        mDatabaseDAO.addTvShowItem(show.getName(), show.getNumberOfSeasons(), String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
+        mMoviesListAdapter.add(position, show);
     }
 
     /**
@@ -565,7 +587,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mDoubleBackToExitPressedOnce = true;
         SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.toast_double_back_click));
 
-        mHandler.postDelayed(new Runnable() {
+        mDelayHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 MainActivity.this.mDoubleBackToExitPressedOnce = false;
@@ -585,9 +607,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mAutoCompleteTextView.dismissDropDown();
         mSeasonEditText.setVisibility(View.VISIBLE);
 
-        if(show.getNumberOfEpisoades() == 0){
+        if (show.getNumberOfEpisoades() == 0) {
             mSeasonEditText.setHint(getString(R.string.no_seasons_available));
-        }else{
+        } else {
             mSeasonEditText.setHint("Seasons 1 - " + show.getNumberOfSeasons());
         }
         mSeasonEditText.requestFocus();
