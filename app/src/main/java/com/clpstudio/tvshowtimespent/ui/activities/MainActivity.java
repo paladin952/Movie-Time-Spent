@@ -164,6 +164,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private boolean mPositionChanged;
 
+    /**
+     * The tv show to be undo
+     */
+    private TvShow undoShow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -395,21 +400,22 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 final int position = viewHolder.getAdapterPosition();
                 final int databaseId = mMoviesListAdapter.getData().get(position).getId();
 
-                final TvShow undoShow = mMoviesListAdapter.getData().get(position);
-                mMoviesListAdapter.deleteItem(position);
+                undoShow = mMoviesListAdapter.getData().get(position);
                 mDatabaseDAO.deleteTvShow(databaseId);
+                mMoviesListAdapter.deleteItem(position);
 
                 Snackbar snackbar = Snackbar
-                        .make(mCoordinatorLayout, "\n\n", Snackbar.LENGTH_LONG)
+                        .make(mCoordinatorLayout, "", Snackbar.LENGTH_LONG)
                         .setAction(getString(R.string.undo), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 undo(undoShow, position);
+                                setTime(calculateTimeSpent());
+                                undoShow = null;
                             }
                         });
+
                 snackbar.show();
-
-
                 setTime(calculateTimeSpent());
                 mPositionChanged = true;
 
@@ -452,8 +458,11 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * @param position The last position in list
      */
     private void undo(TvShow show, int position) {
-        mDatabaseDAO.addTvShowItem(show.getName(), show.getNumberOfSeasons(), String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
-        mMoviesListAdapter.add(position, show);
+        if(show!= null){
+            mDatabaseDAO.addTvShowItem(show.getName(), show.getNumberOfSeasons(), String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
+            mMoviesListAdapter.add(position, show);
+            show = null;
+        }
     }
 
     /**
