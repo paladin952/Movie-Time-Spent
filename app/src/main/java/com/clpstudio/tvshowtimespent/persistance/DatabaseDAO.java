@@ -89,7 +89,6 @@ public class DatabaseDAO {
         contentValues.put(DBHelper.COLUMN_ID, id);
 
         int res = mDatabase.delete(DBHelper.TABLE_TV_SHOW_NAME, DBHelper.COLUMN_ID +"=?", new String[]{String.valueOf(id)});
-        Log.d("luci", "Deletion from db: " + Integer.toString(res));
     }
 
     /**
