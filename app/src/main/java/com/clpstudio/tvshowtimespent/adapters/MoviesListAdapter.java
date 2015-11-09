@@ -82,6 +82,16 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     }
 
     /**
+     * Add a new show at position in list
+     * @param position The position to be inserted
+     * @param show The show
+     */
+    public void add(int position,TvShow show){
+        mData.add(position, show);
+        notifyDataSetChanged();
+    }
+
+    /**
      * add new data as a list of items
      * @param data The list of data
      */
