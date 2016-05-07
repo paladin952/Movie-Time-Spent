@@ -4,17 +4,37 @@
     tools:mContext="sciencecalculator.clpstudio.com.sciencecalculator.ui.activities.MainActivity">
 
     <item
-        android:id="@+id/action_about"
-        android:orderInCategory="1"
-        android:icon="@drawable/ic_action_about"
-        app:showAsAction="always"
-        android:title="@string/about" />
+        android:id="@+id/action_search"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_share_facebook"
-        android:orderInCategory="1"
+        android:id="@+id/action_voice_control"
+        android:icon="@drawable/ic_action_voice_recognition"
+        android:title="Voice control"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_share"
         android:icon="@drawable/ic_share"
-        app:showAsAction="always"
-        android:title="@string/facebook" />
+        android:orderInCategory="1"
+        android:title="@string/share"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_about"
+        android:icon="@drawable/ic_action_about"
+        android:orderInCategory="2"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_rate"
+        android:orderInCategory="3"
+        android:title="@string/rate"
+        app:showAsAction="never" />
+
+
 
 </menu>

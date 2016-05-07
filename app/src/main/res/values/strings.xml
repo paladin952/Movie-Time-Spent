@@ -3,34 +3,35 @@
     <string name="app_name">Tv Show Time Spent</string>
     <string name="about_activity_name">About us</string>
 
-    <!-- Database api-->
+    <!-- The movie database api-->
     <string name="api_key">64dc1ebd6ed1b0db0498b008931fb295</string>
+    <string name="api_base_url">https://api.themoviedb.org/3/</string>
 
     <!-- Edit text hints-->
     <string name="hint_seasons_standard">Seasons number</string>
     <string name="hint_autocomplete_standard">"Enter show title"</string>
+    <string name="seasons_edit_text_hint">Seasons 1 - %1$s</string>
+    <string name="search_view_hint">Search tv shows</string>
 
-    <!-- facebook-->
-    <string name="facebook_app_id">531668810323627</string>
-    <string name="facebook_title">Try it!</string>
-    <string name="facebook_description">Tv Show Time Spent app from Android</string>
 
     <!-- toolbar-->
-    <string name="facebook">Facebook</string>
+    <string name="share">Share</string>
     <string name="about">About</string>
 
     <!-- links-->
     <string name="google_play_app_link">https://play.google.com/store/apps/details?id=com.clpstudio.movetimespent</string>
     <string name="the_movie_db_link">http://www.themoviedb.org</string>
+    <string name="share_time_spent_to_external_apps">I spent %1$s watching tv series. Let\'s see your record!\n\n%2$s\nVia %3$s</string>
+    <string name="time_format">%1$s days, %2$s hours and %3$s minutes</string>
 
     <!-- Errors-->
     <string name="no_result">No results!</string>
     <string name="incorrect_seasons">Incorrect season number!</string>
-    <string name="permission_error">You can\'t use the app without that permission!</string>
-    <string name="toast_no_internet">No internet connection!</string>
+    <string name="error_no_internet_connection">No internet connection!</string>
     <string name="toast_double_back_click">Please click BACK again to exit!</string>
     <string name="title_activity_about">AboutActivity</string>
     <string name="no_seasons_available">No seasons</string>
+    <string name="api_server_error">Server error. Please try again!</string>
 
     <!-- About-->
     <string name="about_us">Created by Clp Studio\nPowered by www.themoviedb.org</string>
@@ -39,5 +40,15 @@
     <string name="go_to_site">GO TO SITE</string>
     <string name="delete">Delete</string>
     <string name="undo">Undo</string>
+    <string name="share_choose_title">Share this application!</string>
+
+    <!--Crittercism-->
+    <string name="crittercism_app_id">5213b80e249841f49fb9eac1157a813100555300</string>
+
+    <!--Admob-->
+    <string name="admob_main_banner_ca" >ca-app-pub-5100447244378163/4665669532</string>
+    <string name="speech_prompt">Speach prompt text</string>
+    <string name="speech_not_supported">Voice speech is not supported on your phone!</string>
+    <string name="rate">Rate</string>
 
 </resources>

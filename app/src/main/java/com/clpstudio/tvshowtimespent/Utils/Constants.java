@@ -1,23 +1,54 @@
-package com.clpstudio.tvshowtimespent.Utils;
+package com.clpstudio.tvshowtimespent.utils;
 
 /**
  * Created by Lucian on 10/31/2015.
  */
 public class Constants {
 
-    /**
-     * one second in milliseconds
-     */
-    public static final int ONE_SECOND = 1000;
+    public class Time {
+        /**
+         * one second in milliseconds
+         */
+        public static final int ONE_SECOND = 1000;
+
+        /**
+         * two seconds in milliseconds
+         */
+        public static final int TWO_SECONDS = 2000;
+
+        /**
+         * three seconds in milliseconds
+         */
+        public static final int THREE_SECONDS = 3000;
+
+        /**
+         * The time interval after we make a api call on retrieving data suggestions
+         */
+        public static final int DEBOUNCE_TIME_INTERVAL = ONE_SECOND/2;
+    }
+
+    public class General {
+
+        /**
+         * The minimum number of character to send and api request
+         */
+        public static final int AUTOCOMPLETE_THRESHOLD = 3;
+
+        /**
+         * The end of sublist for autocomplete
+         */
+        public static final int AUTOCOMPLETE_SUBLIST_END = 5;
+
+    }
 
     /**
-     * two seconds in milliseconds
+     * Class that stores code-s for intents
      */
-    public static final int TWO_SECONDS = 2000;
+    public class Code {
 
-    /**
-     * three seconds in milliseconds
-     */
-    public static final int THREE_SECONDS = 3000;
-
+        /**
+         * The intent request code for voice speech
+         */
+        public static final int REQ_CODE_SPEECH_INPUT = 1;
+    }
 }

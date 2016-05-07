@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.Utils;
+package com.clpstudio.tvshowtimespent.utils;
 
 /**
  * Created by lclapa on 10/26/2015.

@@ -4,9 +4,31 @@
     <color name="colorPrimaryDark">#484848</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="grey_6">#d0d0d0</color>
-    <color name="grey_4">#ededed</color>
     <color name="dark_petrol">#218076</color>
+
+    <color name="shadow_start_color">#44000000</color>
+    <color name="light_red">#FE2E2E</color>
+    <color name="grey_3">#6c6c6c</color>
+    <color name="grey_3_50">#806c6c6c</color>
+    <color name="grey_38">#262626</color>
+    <color name="grey_38_5">#0D262626</color>
+    <color name="grey_38_30">#4D262626</color>
+    <color name="grey_38_95">#CC262626</color>
+    <color name="grey_4">#ededed</color>
+    <color name="grey_4_50">#80ededed</color>
+    <color name="grey_5">#4b4b4b</color>
+    <color name="grey_6">#d0d0d0</color>
+
+    <color name="sky">#33B5E5</color>
+    <color name="violet">#9933CC</color>
+    <color name="red">#CC0000</color>
+
+    <color name="functional_blue">#00a1de</color>
+    <color name="transparent">#0000</color>
+    <color name="white_opacity_30">#4Dffffff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="white_opacity_5">#0Dffffff</color>
 
     <color name="snackbar_red">#FE2E2E</color>
 </resources>

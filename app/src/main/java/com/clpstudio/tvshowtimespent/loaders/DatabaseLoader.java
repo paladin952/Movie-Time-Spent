@@ -3,8 +3,7 @@ package com.clpstudio.tvshowtimespent.loaders;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.clpstudio.tvshowtimespent.model.TvShow;
-import com.clpstudio.tvshowtimespent.persistance.DBHelper;
+import com.clpstudio.tvshowtimespent.model.DbTvShow;
 import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
 
 import java.util.Collections;
@@ -13,9 +12,9 @@ import java.util.List;
 /**
  * Created by lclapa on 10/28/2015.
  */
-public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
+public class DatabaseLoader extends AsyncTaskLoader<List<DbTvShow>> {
     public static final int LOADER_ID = 1;
-    protected List<TvShow> data;
+    protected List<DbTvShow> data;
     protected Context context;
 
     /**
@@ -28,7 +27,7 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
     }
 
     @Override
-    public List<TvShow> loadInBackground() {
+    public List<DbTvShow> loadInBackground() {
         data = query();
         /**show the items based on the order chosen by the user and stored in database*/
         Collections.sort(data);
@@ -39,21 +38,21 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
      * Query the database for all objects
      * @return
      */
-    public List<TvShow> query() {
+    public List<DbTvShow> query() {
         DatabaseDAO dao = new DatabaseDAO(context);
         dao.open();
         return dao.getAllShows();
     }
 
     @Override
-    public void deliverResult(List<TvShow> data) {
+    public void deliverResult(List<DbTvShow> data) {
         if (isReset()) {
             // The Loader has been reset; ignore the result and invalidate the data.
             releaseResources(data);
             return;
         }
 
-        List<TvShow> oldData = data;
+        List<DbTvShow> oldData = data;
         this.data = data;
 
         if (isStarted()) {
@@ -108,7 +107,7 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
     }
 
     @Override
-    public void onCanceled(List<TvShow> data) {
+    public void onCanceled(List<DbTvShow> data) {
         // Attempt to cancel the current asynchronous load.
         super.onCanceled(data);
 
@@ -118,7 +117,7 @@ public class DatabaseLoader extends AsyncTaskLoader<List<TvShow>> {
     }
 
 
-    private void releaseResources(List<TvShow> data) {
+    private void releaseResources(List<DbTvShow> data) {
         // For a simple List, there is nothing to do. For something like a Cursor, we
         // would close it in this method. All resources associated with the Loader
         // should be released here.

@@ -5,9 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.clpstudio.tvshowtimespent.model.TvShow;
+import com.clpstudio.tvshowtimespent.model.DbTvShow;
 import com.clpstudio.tvshowtimespent.persistance.model.DBTvShowModel;
 
 import java.util.ArrayList;
@@ -81,22 +80,22 @@ public class DatabaseDAO {
         values.put(DBHelper.COLUMN_IMAGE_URL, imageUrl);
         values.put(DBHelper.COLUMN_POSITION_IN_LIST, positionInList);
         long lastInsertedId = mDatabase.insert(DBHelper.TABLE_TV_SHOW_NAME, null, values);
-        return (int)lastInsertedId;
+        return (int) lastInsertedId;
     }
 
-    public void deleteTvShow(int id){
+    public void deleteTvShow(int id) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBHelper.COLUMN_ID, id);
 
-        int res = mDatabase.delete(DBHelper.TABLE_TV_SHOW_NAME, DBHelper.COLUMN_ID +"=?", new String[]{String.valueOf(id)});
+        int res = mDatabase.delete(DBHelper.TABLE_TV_SHOW_NAME, DBHelper.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
     }
 
     /**
      * Upgrade an item based on id
      *
-     * @param id    The item id
-     * @param name The name
-     * @param time The value of item
+     * @param id       The item id
+     * @param name     The name
+     * @param time     The value of item
      * @param imageUrl The url to donwload image
      * @return The row where introduced
      */
@@ -115,15 +114,15 @@ public class DatabaseDAO {
      *
      * @return List<DBCurrencyModel>
      */
-    public List<TvShow> getAllShows() {
-        List<TvShow> currencies = new ArrayList<>();
+    public List<DbTvShow> getAllShows() {
+        List<DbTvShow> currencies = new ArrayList<>();
 
         Cursor cursor = mDatabase.query(DBHelper.TABLE_TV_SHOW_NAME,
                 mAllColumnsArray, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            TvShow item = cursorToTvShowItem(cursor);
+            DbTvShow item = cursorToTvShowItem(cursor);
             currencies.add(item);
             cursor.moveToNext();
         }
@@ -138,7 +137,7 @@ public class DatabaseDAO {
      * @param cursor The cursor
      * @return Item model
      */
-    private TvShow cursorToTvShowItem(Cursor cursor) {
+    private DbTvShow cursorToTvShowItem(Cursor cursor) {
         DBTvShowModel item = new DBTvShowModel();
         item.setDbId((int) cursor.getLong(0));
         item.setName(cursor.getString(1));
@@ -146,12 +145,22 @@ public class DatabaseDAO {
         item.setMinutesTotalTime(cursor.getString(3));
         item.setPosterUrl(cursor.getString(4));
         item.setPositionInList(cursor.getInt(5));
-        //now convert it to TvShow type
-        TvShow resultTvShow = new TvShow(item.getDbId(), item.getName());
-        resultTvShow.setMinutesTotalTime(Integer.parseInt(item.getMinutesTotalTime()));
-        resultTvShow.setSeasonsNumber(item.getNumberOfSeasons());
-        resultTvShow.setPosterUrl(item.getPosterUrl());
-        resultTvShow.setPositionInList(item.getPositionInList());
-        return resultTvShow;
+
+        //now convert it to DbTvShow type
+        DbTvShow resultDbTvShow = new DbTvShow(item.getDbId(), item.getName());
+        resultDbTvShow.setMinutesTotalTime(Integer.parseInt(item.getMinutesTotalTime()));
+        resultDbTvShow.setSeasonsNumber(item.getNumberOfSeasons());
+        resultDbTvShow.setPosterUrl(item.getPosterUrl());
+        resultDbTvShow.setPositionInList(item.getPositionInList());
+        return resultDbTvShow;
+    }
+
+    public void rearangeDataInDb(List<DbTvShow> data) {
+        /**If are changes in list must be stored in database*/
+        /**recalculate each show the position in db*/
+        for (DbTvShow show : data) {
+            updateCurrencyItem(show.getId(), show.getName(), show.getNumberOfSeasons(),
+                    String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
+        }
     }
 }

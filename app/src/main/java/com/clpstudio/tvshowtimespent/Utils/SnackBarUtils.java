@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.Utils;
+package com.clpstudio.tvshowtimespent.utils;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

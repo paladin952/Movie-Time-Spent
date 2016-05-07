@@ -1,57 +1,42 @@
 package com.clpstudio.tvshowtimespent.adapters;
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.clpstudio.tvshowtimespent.R;
-import com.clpstudio.tvshowtimespent.model.TvShow;
-import com.clpstudio.tvshowtimespent.network.DatabaseSuggestionsRetriever;
+import com.clpstudio.tvshowtimespent.network.model.ApiResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by lclapa on 10/26/2015.
  */
-public class AutocompleteAdapter extends BaseAdapter implements Filterable {
+public class AutocompleteAdapter extends RecyclerView.Adapter<AutocompleteAdapter.ViewHolder> {
 
-    /**
-     * The filter
-     */
-    private Filter mResultFilter;
     /**
      * The data
      */
-    private ArrayList<TvShow>mData;
+    private ArrayList<ApiResult> mData;
 
-    /**
-     * Backend retriver
-     */
-    private DatabaseSuggestionsRetriever mDatabaseSuggestionsRetriever;
-
-    /**
-     * Layout inflater
-     */
-    private LayoutInflater inflater;
-
-    /**
-     * The context
-     */
-    private Context mContext;
 
     /**
      * Listener for on drop down list click
      */
-    public interface OnDropDownListClick{
+    public interface OnDropDownListClick {
 
-        void onSuggestionClickListener(TvShow show);
+        /**
+         * Called when a item on the list is clicked
+         *
+         * @param show The item clicked
+         */
+        void onSuggestionClickListener(ApiResult show);
 
     }
 
@@ -62,24 +47,24 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
 
     /**
      * The constructor
-     * @param context The context
+     *
+     * @param listener The listener for actions
      */
-    public AutocompleteAdapter(Context context, OnDropDownListClick listener) {
+    public AutocompleteAdapter(OnDropDownListClick listener) {
         mData = new ArrayList<>();
-        mDatabaseSuggestionsRetriever = new DatabaseSuggestionsRetriever(context);
-        inflater = LayoutInflater.from(context);
-        mContext = context;
         mListener = listener;
     }
 
     @Override
-    public int getCount() {
-        return mData.size();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_autocomplete_list_row, parent, false);
+        return new ViewHolder(convertView);
     }
 
     @Override
-    public TvShow getItem(int position) {
-        return mData.get(position);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.title.setText(mData.get(position).getName());
+        holder.itemView.setOnClickListener(v -> mListener.onSuggestionClickListener(mData.get(position)));
     }
 
     @Override
@@ -88,69 +73,34 @@ public class AutocompleteAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if(convertView == null){
-            viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.layout_autocomplete_list_row, null);
-            viewHolder.title = (TextView)convertView.findViewById(R.id.title);
-            convertView.setTag(viewHolder);
-        }else{
-            viewHolder = (ViewHolder)convertView.getTag();
-        }
-
-        viewHolder.title.setText(mData.get(position).getName());
-
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onSuggestionClickListener(getItem(position));
-            }
-        });
-
-        return convertView;
+    public int getItemCount() {
+        return mData.size();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Filter getFilter() {
-        if(mResultFilter == null){
-            mResultFilter = new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence constraint) {
-                    FilterResults filterResults = new FilterResults();
-                    if(constraint != null){
-                        List<TvShow> results = mDatabaseSuggestionsRetriever.getTvShowsSuggestions(constraint.toString());
-                        filterResults.values = results;
-                        filterResults.count = results.size();
-                    }
-                    return filterResults;
-                }
+    public void addAll(List<ApiResult> data) {
+        mData.clear();
+        mData.addAll(data);
+        notifyDataSetChanged();
+    }
 
-                @Override
-                protected void publishResults(CharSequence constraint, FilterResults results) {
-                    if (constraint == null) {
-                        return;
-                    }
-
-                    if(results.count>0){
-                        mData.clear();
-                        mData.addAll((List<TvShow>) results.values);
-                        notifyDataSetChanged();
-                    }else{
-                        Toast.makeText(mContext, mContext.getString(R.string.no_result), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            };
-
-        }
-        return mResultFilter;
+    /**
+     * Clear the data from the list
+     */
+    public void clear() {
+        mData.clear();
+        notifyDataSetChanged();
     }
 
     /**
      * The view holder
      */
-    public static class ViewHolder{
-        public TextView title;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.title)
+        TextView title;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
     }
 }

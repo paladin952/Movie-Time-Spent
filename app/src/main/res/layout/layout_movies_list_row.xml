@@ -3,6 +3,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/card_view_size"
+    android:layout_marginRight="@dimen/BU_1_2"
+    android:layout_marginLeft="@dimen/BU_1_2"
     android:orientation="vertical">
 
     <RelativeLayout

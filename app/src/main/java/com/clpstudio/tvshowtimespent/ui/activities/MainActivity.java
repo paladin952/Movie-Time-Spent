@@ -1,73 +1,82 @@
 package com.clpstudio.tvshowtimespent.ui.activities;
 
-import android.Manifest;
+import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.KeyEvent;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.clpstudio.tvshowtimespent.BuildConfig;
 import com.clpstudio.tvshowtimespent.R;
-import com.clpstudio.tvshowtimespent.Utils.FacebookUtils;
-import com.clpstudio.tvshowtimespent.Utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.adapters.AutocompleteAdapter;
 import com.clpstudio.tvshowtimespent.adapters.MoviesListAdapter;
 import com.clpstudio.tvshowtimespent.loaders.DatabaseLoader;
-import com.clpstudio.tvshowtimespent.model.TvShow;
-import com.clpstudio.tvshowtimespent.network.DatabaseSuggestionsRetriever;
+import com.clpstudio.tvshowtimespent.model.DbTvShow;
 import com.clpstudio.tvshowtimespent.network.NetworkUtils;
+import com.clpstudio.tvshowtimespent.network.RetrofitServiceFactory;
+import com.clpstudio.tvshowtimespent.network.interfaces.IMovieDbService;
+import com.clpstudio.tvshowtimespent.network.model.ApiResult;
+import com.clpstudio.tvshowtimespent.network.model.TvShow;
 import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
-import com.facebook.share.widget.ShareDialog;
+import com.clpstudio.tvshowtimespent.persistance.preferences.ISharedPreferences;
+import com.clpstudio.tvshowtimespent.persistance.preferences.SharedPreferencesFactory;
+import com.clpstudio.tvshowtimespent.utils.Constants;
+import com.clpstudio.tvshowtimespent.utils.SnackBarUtils;
+import com.clpstudio.tvshowtimespent.utils.TimeUtils;
+import com.clpstudio.tvshowtimespent.utils.Utils;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.jakewharton.rxbinding.widget.RxSearchView;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
-        DatabaseSuggestionsRetriever.OnNetworkLoadFinish, MoviesListAdapter.OndMovieEventListener,
-        LoaderManager.LoaderCallbacks<List<TvShow>> {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
+public class MainActivity extends RxAppCompatActivity implements AutocompleteAdapter.OnDropDownListClick,
+        MoviesListAdapter.OndMovieEventListener, LoaderManager.LoaderCallbacks<List<DbTvShow>> {
+
+    /**
+     * The log tag
+     */
+    private static final String LOG_TAG = MainActivity.class.toString();
     /**
      * The mToolbar
      */
     private Toolbar mToolbar;
-
-    /**
-     * The autocomplete edit text
-     */
-    private AutoCompleteTextView mAutoCompleteTextView;
-
-    /**
-     * The adapter for autocomplete edit text
-     */
-    private AutocompleteAdapter mAutocompleteAdapter;
 
     /**
      * The list of movies to calculate
@@ -80,14 +89,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     private EditText mSeasonEditText;
 
     /**
-     * For getting server connection
+     * The last tvShow donwloaded form the server
      */
-    private DatabaseSuggestionsRetriever mDatabaseSuggestionsRetriever;
-
-    /**
-     * The show to be added
-     */
-    private TvShow mShow;
+    private TvShow mTvShow;
 
     /**
      * Text view to show the result in days
@@ -117,22 +121,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     /**
      * Loader's callbacks
      */
-    private LoaderManager.LoaderCallbacks<List<TvShow>> mCallbacks;
+    private LoaderManager.LoaderCallbacks<List<DbTvShow>> mCallbacks;
 
     /**
      * Boolean to check if back button was double pressed
      */
     private boolean mDoubleBackToExitPressedOnce;
-
-    /**
-     * Facebook callbacks
-     */
-    private CallbackManager callbackManager;
-
-    /**
-     * Dialog for share
-     */
-    private ShareDialog mFacebookShareDialog;
 
     /**
      * Handler for delay operations
@@ -145,172 +139,388 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     private DatabaseDAO mDatabaseDAO;
 
     /**
-     * Internet permission request code
+     * The search view
      */
-    private static final int PERMISSION_INTERNET_REQUEST_CODE = 0;
+    private SearchView mSearchView;
 
     /**
-     * Internet permission request code
+     * The adapter for the autocomplete list
      */
-    private static final int PERMISSION_ACCESSE_NETWORK_STATE_REQUEST_CODE = 1;
+    private AutocompleteAdapter mAutocompleteAdapter;
 
     /**
-     * one second in milliseconds
+     * The container view for add and season edit text
      */
-    private static final int ONE_SECOND = 1000;
+    @Bind(R.id.add_container)
+    View mAddContainer;
 
     /**
-     * To know when there are position changes in list
+     * The add view binding
      */
-    private boolean mPositionChanged;
+    @Bind(R.id.adView)
+    AdView mAdView;
 
     /**
-     * The tv show to be undo
+     * The add button binding
      */
-    private TvShow undoShow;
+    @Bind(R.id.add_button)
+    Button mAddButton;
+
+    @Bind(R.id.autocomplete_list)
+    RecyclerView mAutoCompleteList;
+
+    /**
+     * Called when add button is clicked
+     */
+    @OnClick(R.id.add_button)
+    void onAddClick() {
+        String seasonsText = mSeasonEditText.getText().toString();
+
+        if (TextUtils.isEmpty(seasonsText) || mTvShow == null) {
+            return;
+        }
+
+        DbTvShow dbTvShow;
+        dbTvShow = convertToDbTvShow(mTvShow);
+        Integer showSeasonsCount = Integer.parseInt(dbTvShow.getNumberOfSeasons());
+        Integer userInput = Integer.parseInt(seasonsText);
+        if (showSeasonsCount < userInput || userInput < 1) {
+            SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.incorrect_seasons));
+            return;
+        }
+
+        dbTvShow.setSeasonsNumber(mSeasonEditText.getText().toString());
+        dbTvShow.setMinutesTotalTime(TimeUtils.calculateTimeForOneShow(dbTvShow));
+
+        saveToDb(dbTvShow);
+        mMoviesListAdapter.add(dbTvShow, 0);
+        updateDatabase();
+        resetAfterSaveInDb();
+
+    }
+
+    /**
+     * Updating the database with the new items
+     */
+    public void updateDatabase() {
+        mMoviesListAdapter.reorderPosition();
+        mDatabaseDAO.rearangeDataInDb(mMoviesListAdapter.getData());
+    }
+
+    /**
+     * Resetting the state of the activity after we save in database the movie
+     */
+    private void resetAfterSaveInDb() {
+        resetAdd();
+        closeSoftKeyboard();
+        mSeasonEditText.clearFocus();
+        setTime(TimeUtils.calculateTimeSpent(mMoviesListAdapter.getData()));
+        mTvShow = null;
+        mSearchView.setQuery("", false);
+        mSearchView.clearFocus();
+    }
+
+    /**
+     * Saving a tv show to database
+     *
+     * @param dbTvShow The tv show to be saved
+     */
+    private void saveToDb(DbTvShow dbTvShow) {
+        int databaseId = mDatabaseDAO.addTvShowItem(dbTvShow.getName(), dbTvShow.getNumberOfSeasons(),
+                String.valueOf(dbTvShow.getMinutesTotalTime()), dbTvShow.getPosterUrl(), mMoviesListAdapter.getItemCount());
+        dbTvShow.setId(databaseId);
+    }
+
+    /**
+     * Converting a {@link TvShow} to {@link DbTvShow}
+     *
+     * @param tvShow The tvshow to be converter
+     * @return A new DbTvShow object
+     */
+    public DbTvShow convertToDbTvShow(TvShow tvShow) {
+        DbTvShow dbTvShow = new DbTvShow(tvShow.getId(), tvShow.getName());
+        dbTvShow.setPosterUrl(tvShow.getPosterPath());
+
+        dbTvShow.setNumberOfEpisoades((tvShow.getNumberOfEpisodes() != null) ? tvShow.getNumberOfEpisodes() : 0);
+        dbTvShow.setEpisodesRunTime(Utils.convertListOfIntegersToString(tvShow.getEpisodeRunTime()));
+        dbTvShow.setSeasonsEpisodes(tvShow.getSeasons());
+        dbTvShow.setSeasonsNumber(String.valueOf(tvShow.getNumberOfSeasons()));
+        return dbTvShow;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        checkForInternetPermission();
+        ButterKnife.bind(this);
         mCallbacks = this;
-        setupNetwork();
         setupDatabase();
         linkUi();
         setupAutocomplete();
         setupMovieList();
         setupListeners();
         setupToolbar();
-        setupFacebookSdk();
     }
 
     @Override
     protected void onDestroy() {
         mDatabaseDAO.close();
+
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+
         super.onDestroy();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkForInternetPermission();
+        loadAds();
         getSupportLoaderManager().initLoader(DatabaseLoader.LOADER_ID, null, mCallbacks).forceLoad();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        /**If are changes in list must be stored in database*/
-        if (mPositionChanged) {
-            /**recalculate each show the position in db*/
-            mMoviesListAdapter.reorderPosition();
-            for (TvShow show : mMoviesListAdapter.getData()) {
-                mDatabaseDAO.updateCurrencyItem(show.getId(), show.getName(), show.getNumberOfSeasons(),
-                        String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
-            }
-            mPositionChanged = false;
+    /**
+     * Loads the ads and show to the user
+     */
+    private void loadAds() {
+        if (BuildConfig.DEBUG || !NetworkUtils.isNetworkAvailable(this)) {
+            mAdView.setVisibility(View.GONE);
+            return;
         }
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        mAdView.setVisibility(View.VISIBLE);
     }
 
     /**
-     * Request for permissions
+     * Called when drop down suggestion list is clicked
+     *
+     * @param show The show
      */
-    private void checkForInternetPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PERMISSION_INTERNET_REQUEST_CODE);
-        }
-    }
-
-    /**
-     * request accesse internet permission
-     */
-    private void checkForAcceseInternetPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, PERMISSION_INTERNET_REQUEST_CODE);
-        }
-    }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_INTERNET_REQUEST_CODE:
-                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
-                    mDelayHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    }, ONE_SECOND);
-                }
-                break;
-            case PERMISSION_ACCESSE_NETWORK_STATE_REQUEST_CODE:
-                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.permission_error));
-                    mDelayHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    }, ONE_SECOND);
-                }
-                break;
-        }
-    }
+    public void onSuggestionClickListener(ApiResult show) {
+        IMovieDbService movieDbService = RetrofitServiceFactory.createRetrofitService(IMovieDbService.class, getString(R.string.api_base_url));
+        movieDbService
+                .getTvShowById(String.valueOf(show.getId()), getString(R.string.api_key))
+                .compose(bindUntilEvent(ActivityEvent.PAUSE))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof UnknownHostException) {
+                        SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.error_no_internet_connection));
+                    } else {
+                        SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.api_server_error));
+                    }
 
-    /**
-     * Setup for facebook sharing
-     */
-    private void setupFacebookSdk() {
-        FacebookSdk.sdkInitialize(this);
-        mFacebookShareDialog = new ShareDialog(this);
-        callbackManager = CallbackManager.Factory.create();
-    }
+                    return Observable.empty();
+                })
+                .subscribe(tvShow -> {
+                    mTvShow = tvShow;
+                    mAddContainer.setVisibility(View.VISIBLE);
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+                    if (tvShow.getNumberOfEpisodes() != null && tvShow.getNumberOfEpisodes() == 0) {
+                        mSeasonEditText.setHint(getString(R.string.no_seasons_available));
+                    } else {
+                        mSeasonEditText.setHint(getString(R.string.seasons_edit_text_hint, tvShow.getNumberOfSeasons()));
+                    }
+                    mSeasonEditText.setText("");
+                    mSeasonEditText.requestFocus();
+                });
+        hideAutocompleteList();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.share_menu, menu);
-        return true;
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchManager searchManager = (SearchManager) this.getSystemService(Context.SEARCH_SERVICE);
+
+        if (searchItem != null) {
+            mSearchView = (SearchView) searchItem.getActionView();
+        }
+
+        if (mSearchView != null) {
+            mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            mSearchView.setIconified(false);
+            mSearchView.setQueryHint(getString(R.string.search_view_hint));
+            mSearchView.setMaxWidth(getResources().getDimensionPixelOffset(R.dimen.BU_22));
+        }
+        setListenerForSearchView();
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Setting a listener for search view
+     */
+    private void setListenerForSearchView() {
+        IMovieDbService movieDbService = RetrofitServiceFactory.createRetrofitService(IMovieDbService.class, getString(R.string.api_base_url));
+        RxSearchView.queryTextChanges(mSearchView)
+                .compose(bindUntilEvent(ActivityEvent.DESTROY))
+                .doOnEach(notification -> {
+                    if (notification.getValue().toString().length() <= Constants.General.AUTOCOMPLETE_THRESHOLD) {
+
+                        mAutocompleteAdapter.clear();
+                        mAutoCompleteList.setVisibility(View.GONE);
+                    }
+                })
+                .filter(textViewTextChangeEvent -> textViewTextChangeEvent.toString().length() > Constants.General.AUTOCOMPLETE_THRESHOLD)
+                .debounce(Constants.Time.DEBOUNCE_TIME_INTERVAL, TimeUnit.MILLISECONDS)
+                .map(textViewTextChangeEvent1 -> textViewTextChangeEvent1.toString().replace(" ", "%20"))// replace empty space with html code
+                .flatMap(inputString ->
+                        movieDbService
+                                .getTvShowsByName(inputString, getString(R.string.api_key))
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .onErrorResumeNext(throwable -> {
+                                    if (throwable instanceof UnknownHostException) {
+                                        SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.error_no_internet_connection));
+                                    } else {
+                                        SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.api_server_error));
+                                    }
+                                    hideAutocompleteList();
+                                    return Observable.empty();
+                                }))
+                .onErrorResumeNext(throwable1 -> Observable.empty())
+                .subscribe(apiModel -> {
+                    if (apiModel == null) {
+                        return;
+                    }
+
+                    if (apiModel.getTotalResults() > 0) {
+                        showAutocompleteList(apiModel.getApiResults());
+                    } else {
+                        SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.no_result));
+                        hideAutocompleteList();
+                    }
+                });
+
+        mSearchView.setOnCloseListener(() -> true);
+    }
+
+    /**
+     * Show the autocomplete list
+     *
+     * @param data The data to be show on it
+     */
+    private void showAutocompleteList(List<ApiResult> data) {
+        if (data.size() > 5) {
+            mAutocompleteAdapter.addAll(data.subList(0, Constants.General.AUTOCOMPLETE_SUBLIST_END));
+        } else {
+            mAutocompleteAdapter.addAll(data);
+        }
+
+        mAutoCompleteList.setVisibility(View.VISIBLE);
+        mAutoCompleteList.bringToFront();
+    }
+
+    /**
+     * Clean and hide the autocomplete list
+     */
+    private void hideAutocompleteList() {
+        mAutocompleteAdapter.clear();
+        mAutoCompleteList.setVisibility(View.GONE);
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_share_facebook:
-                checkForAcceseInternetPermission();
-                if (NetworkUtils.isNetworkAvailable(this)) {
-                    FacebookUtils.shareLinkOnFacebook(this, mFacebookShareDialog, mDaysSpent.getText().toString(), mHoursSpent.getText().toString(), mMinutesSpent.getText().toString());
-                } else {
-                    SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.toast_no_internet));
-                }
+            case R.id.action_voice_control:
+                handleVoiceControl();
+                break;
+            case R.id.action_share:
+                handleShareClick();
                 return true;
             case R.id.action_about:
-                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, getString(R.string.about_us), Snackbar.LENGTH_LONG);
-                snackbar.setAction(getString(R.string.go_to_site), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.the_movie_db_link)));
-                            startActivity(browserIntent);
-                        } else {
-                            SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.toast_no_internet));
-                        }
-                    }
-                });
-                snackbar.show();
+                handleOnClickAbout();
+                return true;
+            case R.id.action_rate:
+                handleOnClickRate();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Handles clicks on rate button
+     */
+    private void handleOnClickRate() {
+        Utils.openStore(this);
+    }
+
+    /**
+     * Get's called when the user presses on voice control button
+     */
+    private void handleVoiceControl() {
+        if(NetworkUtils.isNetworkAvailable(this)){
+            promptSpeechInput();
+        }else{
+            SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.error_no_internet_connection));
+        }
+    }
+
+    /**
+     * Handles the click on about from toolbar
+     */
+    private void handleOnClickAbout() {
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, getString(R.string.about_us), Snackbar.LENGTH_LONG);
+        snackbar.setAction(getString(R.string.go_to_site), v -> {
+            if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.the_movie_db_link)));
+                startActivity(browserIntent);
+            } else {
+                SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.error_no_internet_connection));
+            }
+        });
+        snackbar.show();
+    }
+
+    /**
+     * Handles click on share button
+     */
+    private void handleShareClick() {
+        String timeDays = mDaysSpent.getText().toString();
+        String timeHours = mHoursSpent.getText().toString();
+        String timeMinutes = mMinutesSpent.getText().toString();
+        String totalTimeSpent = getString(R.string.time_format, timeDays, timeHours, timeMinutes);
+
+        String text = getString(R.string.share_time_spent_to_external_apps,
+                totalTimeSpent, getMoviesTitles(), Utils.getAppLink(this));
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.share_choose_title)));
+    }
+
+    /**
+     * Returns the movies titles as string
+     *
+     * @return The list of titles
+     */
+    private String getMoviesTitles() {
+        StringBuilder res = new StringBuilder("");
+        int counter = 1;
+        for (DbTvShow dbTvShow : mMoviesListAdapter.getData()) {
+            int numberOfSeasons = Integer.parseInt(dbTvShow.getNumberOfSeasons());
+            String seasonText;
+            seasonText = (numberOfSeasons == 1) ? " season" : " seasons";
+
+            res.append(counter)
+                    .append(" ")
+                    .append(dbTvShow.getName())
+                    .append(" ")
+                    .append(dbTvShow.getNumberOfSeasons())
+                    .append(seasonText)
+                    .append("\n");
+            counter++;
+        }
+        return res.toString();
     }
 
     /**
@@ -325,55 +535,18 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * Add listeners on views
      */
     private void setupListeners() {
-        mSeasonEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    checkForAcceseInternetPermission();
-                    String text = mSeasonEditText.getText().toString();
-                    if (NetworkUtils.isNetworkAvailable(MainActivity.this)) {
-                        if (!text.isEmpty()) {
-                            Integer showSeasonsCount = Integer.parseInt(mShow.getNumberOfSeasons());
-                            Integer userInput = Integer.parseInt(text);
-                            if (showSeasonsCount < userInput || userInput < 1) {
-                                SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.incorrect_seasons));
-                                return true;
-                            } else {
-                                mSeasonEditText.setHint(getString(R.string.hint_seasons_standard));
-                                mShow.setSeasonsNumber(mSeasonEditText.getText().toString());
-                                mShow.setMinutesTotalTime(calculateTimeForOneShow(mShow));
-
-                                //set show id to be the same with the database id
-                                //so it can be deleted easily
-                                int databaseId = mDatabaseDAO.addTvShowItem(mShow.getName(), mShow.getNumberOfSeasons(),
-                                        String.valueOf(mShow.getMinutesTotalTime()), mShow.getPosterUrl(), mMoviesListAdapter.getItemCount());
-                                mShow.setId(databaseId);
-                                mMoviesListAdapter.add(mShow);
-
-                                //add to database
-                                resetEditTexts();
-                                closeSoftKeyboard();
-                                mSeasonEditText.clearFocus();
-                                mAutoCompleteTextView.clearFocus();
-                                setTime(calculateTimeSpent());
-                                return true;
-                            }
-                        }
-                    } else {
-                        SnackBarUtils.snackError(MainActivity.this, mCoordinatorLayout, getString(R.string.toast_no_internet));
-                    }
-                }
-                return false;
-            }
-        });
-
         /**listener for drag and drop*/
         ItemTouchHelper.Callback itemMoveCallbacks = new ItemTouchHelper.Callback() {
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 Collections.swap(mMoviesListAdapter.getData(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 mMoviesListAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                mPositionChanged = true;
                 return true;
+            }
+
+            @Override
+            public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+                updateDatabase();
             }
 
             @Override
@@ -400,24 +573,19 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
                 final int position = viewHolder.getAdapterPosition();
                 final int databaseId = mMoviesListAdapter.getData().get(position).getId();
 
-                undoShow = mMoviesListAdapter.getData().get(position);
-                mDatabaseDAO.deleteTvShow(databaseId);
+                final DbTvShow undoShow = mMoviesListAdapter.getData().get(position);
                 mMoviesListAdapter.deleteItem(position);
+                mDatabaseDAO.deleteTvShow(databaseId);
 
                 Snackbar snackbar = Snackbar
-                        .make(mCoordinatorLayout, "", Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.undo), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                undo(undoShow, position);
-                                setTime(calculateTimeSpent());
-                                undoShow = null;
-                            }
+                        .make(mCoordinatorLayout, "\n\n", Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo), v -> {
+                            undo(undoShow, position);
                         });
-
                 snackbar.show();
-                setTime(calculateTimeSpent());
-                mPositionChanged = true;
+
+
+                setTime(TimeUtils.calculateTimeSpent(mMoviesListAdapter.getData()));
 
             }
 
@@ -457,12 +625,10 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * @param show     The last deleted show
      * @param position The last position in list
      */
-    private void undo(TvShow show, int position) {
-        if(show!= null){
-            mDatabaseDAO.addTvShowItem(show.getName(), show.getNumberOfSeasons(), String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
-            mMoviesListAdapter.add(position, show);
-            show = null;
-        }
+    private void undo(DbTvShow show, int position) {
+        mDatabaseDAO.addTvShowItem(show.getName(), show.getNumberOfSeasons(), String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
+        mMoviesListAdapter.add(position, show);
+        mMoviesList.smoothScrollToPosition(position);
     }
 
     /**
@@ -478,10 +644,9 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     /**
      * Reset autocomplete and season edit text to normal
      */
-    private void resetEditTexts() {
-        mAutoCompleteTextView.setText("");
+    private void resetAdd() {
         mSeasonEditText.setText("");
-        mSeasonEditText.setVisibility(View.GONE);
+        mAddContainer.setVisibility(View.GONE);
     }
 
     /**
@@ -499,26 +664,18 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      * Setup the autocomplete
      */
     private void setupAutocomplete() {
-        mAutocompleteAdapter = new AutocompleteAdapter(this, this);
-        mAutoCompleteTextView.setAdapter(mAutocompleteAdapter);
-        mAutoCompleteTextView.requestFocus();
-    }
-
-    /**
-     * Setup server connection object
-     */
-    private void setupNetwork() {
-        mDatabaseSuggestionsRetriever = new DatabaseSuggestionsRetriever(this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mAutoCompleteList.setLayoutManager(layoutManager);
+        mAutocompleteAdapter = new AutocompleteAdapter(this);
+        mAutoCompleteList.setAdapter(mAutocompleteAdapter);
     }
 
     /**
      * Link the ui
      */
     private void linkUi() {
-        mAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autocomplete_text_view);
         mMoviesList = (RecyclerView) findViewById(R.id.movies_list);
         mSeasonEditText = (EditText) findViewById(R.id.seasons_edit_text);
-        mSeasonEditText.setVisibility(View.GONE);
         mDaysSpent = (TextView) findViewById(R.id.days);
         mHoursSpent = (TextView) findViewById(R.id.hours);
         mMinutesSpent = (TextView) findViewById(R.id.minutes);
@@ -530,49 +687,8 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
      */
     private void setupToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
-    }
-
-    /**
-     * Calculate the total time spent from one show
-     *
-     * @param show The show
-     * @return int minutes
-     */
-    private int calculateTimeForOneShow(TvShow show) {
-        int minutes = 0;
-        for (int i = 0; i < Integer.parseInt(show.getNumberOfSeasons()); i++) {
-            if (show.getEpisodesRunTime().size() > 0) {
-                int timePerSeason = Integer.parseInt(show.getEpisodesRunTime().get(0)) * Integer.parseInt(show.getSeasonsEpisodesNumber().get(String.valueOf(i)));
-                minutes += timePerSeason;
-            }
-        }
-        return minutes;
-    }
-
-    /**
-     * Calculate the total time spent
-     *
-     * @return A list<string> of time {day, hours, minutes}
-     */
-    private List<String> calculateTimeSpent() {
-        List<TvShow> showList = mMoviesListAdapter.getData();
-
-        int totalMinutes = 0;
-        for (TvShow show : showList) {
-            totalMinutes += show.getMinutesTotalTime();
-        }
-
-        int seconds = totalMinutes * 60;
-        int day = (int) TimeUnit.SECONDS.toDays(seconds);
-        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
-        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
-        List<String> result = new ArrayList<>();
-        result.add(String.valueOf(day));
-        result.add(String.valueOf(hours));
-        result.add(String.valueOf(minute));
-
-        return result;
     }
 
     /**
@@ -588,6 +704,12 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
 
     @Override
     public void onBackPressed() {
+
+        if (mAutoCompleteList.getVisibility() == View.VISIBLE) {
+            mAutoCompleteList.setVisibility(View.GONE);
+            return;
+        }
+
         if (this.mDoubleBackToExitPressedOnce) {
             finish();
             return;
@@ -596,32 +718,7 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
         mDoubleBackToExitPressedOnce = true;
         SnackBarUtils.snackStandard(mCoordinatorLayout, getString(R.string.toast_double_back_click));
 
-        mDelayHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.this.mDoubleBackToExitPressedOnce = false;
-            }
-        }, ONE_SECOND);
-    }
-
-    /**
-     * Called when the data from server finished loading
-     *
-     * @param show The newest created show
-     */
-    @Override
-    public void onNetworkLoadFinish(TvShow show) {
-        mShow = show;
-        mAutoCompleteTextView.setText(show.getName());
-        mAutoCompleteTextView.dismissDropDown();
-        mSeasonEditText.setVisibility(View.VISIBLE);
-
-        if (show.getNumberOfEpisoades() == 0) {
-            mSeasonEditText.setHint(getString(R.string.no_seasons_available));
-        } else {
-            mSeasonEditText.setHint("Seasons 1 - " + show.getNumberOfSeasons());
-        }
-        mSeasonEditText.requestFocus();
+        mDelayHandler.postDelayed(() -> MainActivity.this.mDoubleBackToExitPressedOnce = false, Constants.Time.ONE_SECOND);
     }
 
     @Override
@@ -630,32 +727,58 @@ public class MainActivity extends AppCompatActivity implements AutocompleteAdapt
     }
 
     /**
-     * Called when drop down suggestion list is clicked
-     *
-     * @param show The show
+     * Showing google speech input dialog
+     */
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, Constants.Code.REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.speech_not_supported));
+        }
+    }
+
+    /**
+     * Receiving speech input
      */
     @Override
-    public void onSuggestionClickListener(TvShow show) {
-        mDatabaseSuggestionsRetriever.getTvShowById(String.valueOf(show.getId()), this);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.Code.REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mSearchView.setQuery(result.get(0), false);
+                }
+                break;
+            }
+
+        }
     }
 
     /**
      * Loader listeners
      */
     @Override
-    public Loader<List<TvShow>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<DbTvShow>> onCreateLoader(int id, Bundle args) {
         return new DatabaseLoader(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<TvShow>> loader, List<TvShow> data) {
+    public void onLoadFinished(Loader<List<DbTvShow>> loader, List<DbTvShow> data) {
         mMoviesListAdapter.addAll(data);
-        setTime(calculateTimeSpent());
+        setTime(TimeUtils.calculateTimeSpent(mMoviesListAdapter.getData()));
     }
 
     @Override
-    public void onLoaderReset(Loader<List<TvShow>> loader) {
-
+    public void onLoaderReset(Loader<List<DbTvShow>> loader) {
     }
-
 }

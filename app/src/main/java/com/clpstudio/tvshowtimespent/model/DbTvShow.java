@@ -2,8 +2,9 @@ package com.clpstudio.tvshowtimespent.model;
 
 import android.support.annotation.NonNull;
 
+import com.clpstudio.tvshowtimespent.network.model.Season;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * Created by lclapa on 10/26/2015.
  */
-public class TvShow implements Comparable<TvShow>{
+public class DbTvShow implements Comparable<DbTvShow>{
 
     /**
      * The id
@@ -52,7 +53,7 @@ public class TvShow implements Comparable<TvShow>{
     /**
      * Store the number of episodes on each season
      */
-    private Map<String, String>mSeasonsEpisodes;
+    private List<Season> mSeasonsEpisodes;
 
     /**
      * Boolean to check if remove button is visible
@@ -75,11 +76,20 @@ public class TvShow implements Comparable<TvShow>{
      * @param id The id
      * @param name The name
      */
-    public TvShow(int id, String name) {
+    public DbTvShow(int id, String name) {
         this.mId = id;
         this.mName = name;
         mEpisodesRunTime = new ArrayList<>();
-        mSeasonsEpisodes = new HashMap<>();
+        mSeasonsEpisodes = new ArrayList<>();
+        mMinutesTotalTime = 0;
+    }
+
+    /**
+     * The default constructor
+     */
+    public DbTvShow() {
+        mEpisodesRunTime = new ArrayList<>();
+        mSeasonsEpisodes = new ArrayList<>();
         mMinutesTotalTime = 0;
     }
 
@@ -87,11 +97,11 @@ public class TvShow implements Comparable<TvShow>{
      * Get the map containing season name and number of episodes seen by user
      * @return
      */
-    public Map<String, String> getSeasonsEpisodesNumber() {
+    public List<Season> getSeasonsEpisodesNumber() {
         return mSeasonsEpisodes;
     }
 
-    public void setSeasonsEpisodes(Map<String, String> mSeasonsEpisodes) {
+    public void setSeasonsEpisodes(List<Season> mSeasonsEpisodes) {
         this.mSeasonsEpisodes = mSeasonsEpisodes;
     }
 
@@ -186,7 +196,7 @@ public class TvShow implements Comparable<TvShow>{
      * @return -1 for less than the other, 1 for greater than, 0 for equal
      */
     @Override
-    public int compareTo(@NonNull TvShow another) {
+    public int compareTo(@NonNull DbTvShow another) {
         if(mPositionInList < another.getPositionInList()){
             return -1;
         }else if(mPositionInList > another.getPositionInList()){

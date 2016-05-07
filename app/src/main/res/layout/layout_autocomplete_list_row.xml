@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_add_button_selector"
     android:orientation="vertical">
 
     <TextView
         android:paddingTop="@dimen/BU_1"
         android:paddingBottom="@dimen/BU_1"
+        android:paddingRight="@dimen/BU_1"
+        android:paddingLeft="@dimen/BU_1"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:maxLines="1"
         android:textSize="20dp"
-        android:text ="text"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/title"
@@ -16,7 +22,7 @@
         android:layout_height="wrap_content" />
 
     <View
-        android:background="@android:color/black"
+        android:background="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"/>

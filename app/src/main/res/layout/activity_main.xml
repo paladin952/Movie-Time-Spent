@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,6 +16,17 @@
         <include
             android:id="@+id/app_bar_layout"
             layout="@layout/layout_toolbar" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/autocomplete_list"
+            android:layout_marginRight="@dimen/BU_2"
+            android:layout_marginLeft="@dimen/BU_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/app_bar_layout"
+            android:layout_marginTop="2dp"
+            android:clickable="true"
+            android:scrollbars="vertical" />
 
         <LinearLayout
             android:id="@+id/time_container"
@@ -33,11 +44,11 @@
 
                 <TextView
                     android:id="@+id/days"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="0"
-                    style="@style/WhiteBoldTextView"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
 
@@ -59,11 +70,11 @@
 
                 <TextView
                     android:id="@+id/hours"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="0"
-                    style="@style/WhiteBoldTextView"
                     android:textSize="@dimen/BU_1.5"
                     android:typeface="serif" />
 
@@ -85,8 +96,8 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/WhiteBoldTextView"
                     android:id="@+id/minutes"
+                    style="@style/WhiteBoldTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -108,38 +119,19 @@
 
 
         <LinearLayout
-            android:id="@+id/autocomplete_container"
+            android:visibility="gone"
+            android:id="@+id/add_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/time_container">
-
-            <AutoCompleteTextView
-                android:id="@+id/autocomplete_text_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/BU_1"
-                android:layout_marginTop="@dimen/BU_0.9"
-                android:layout_weight="1"
-                android:background="@null"
-                android:completionThreshold="3"
-                android:dropDownAnchor="@+id/autocomplete_list"
-                android:dropDownHorizontalOffset="0dp"
-                android:dropDownVerticalOffset="0dp"
-                android:gravity="center_vertical"
-                android:hint="@string/hint_autocomplete_standard"
-                android:imeOptions="actionNone"
-                android:lines="1"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@color/dark_petrol"
-                android:textColorHint="@color/dark_petrol"
-                android:typeface="serif" />
 
             <EditText
                 android:id="@+id/seasons_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BU_1"
+                android:layout_marginRight="@dimen/BU_1"
                 android:layout_marginTop="@dimen/BU_0.9"
                 android:layout_weight="1"
                 android:background="@null"
@@ -147,33 +139,45 @@
                 android:hint="@string/hint_seasons_standard"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:lines="1"
                 android:maxLines="1"
                 android:textColor="@color/dark_petrol"
                 android:textColorHint="@color/dark_petrol"
                 android:typeface="serif" />
 
+            <Button
+                android:id="@+id/add_button"
+                style="@style/ButtonAdd"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/BU_1_2"
+                android:text="Add" />
+
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/autocomplete_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/autocomplete_container"
-            android:layout_marginLeft="@dimen/BU_1"
-            android:layout_marginRight="@dimen/BU_1"
-            android:divider="@android:color/black"
-            android:dividerHeight="1dp" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/movies_list"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/autocomplete_container"
-            android:clickable="true"
-            android:scrollbars="vertical" />
-    </RelativeLayout>
+            android:layout_below="@id/add_container"
+            android:orientation="vertical">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/movies_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:scrollbars="vertical" />
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/admob_main_banner_ca" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

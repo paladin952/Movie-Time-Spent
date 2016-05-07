@@ -1,27 +1,18 @@
 package com.clpstudio.tvshowtimespent.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
-import com.clpstudio.tvshowtimespent.Utils.Constants;
-import com.clpstudio.tvshowtimespent.Utils.UrlConstants;
-import com.clpstudio.tvshowtimespent.model.TvShow;
-import com.squareup.picasso.Callback;
+import com.clpstudio.tvshowtimespent.model.DbTvShow;
+import com.clpstudio.tvshowtimespent.utils.UrlConstants;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +30,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
     /**
      * The list of tv shows
      */
-    private List<TvShow>mData;
+    private List<DbTvShow>mData;
 
     /**
      * Interface for when we delete an movie
@@ -68,7 +59,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      * Get the list of shows
      * @return List of Shows
      */
-    public  List<TvShow> getData(){
+    public List<DbTvShow> getData(){
         return mData;
     }
 
@@ -76,8 +67,18 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      * Add a new show in the list
      * @param show The show to be added
      */
-    public void add(TvShow show){
+    public void add(DbTvShow show){
         mData.add(show);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Add an element on position
+     * @param show The show to be added
+     * @param position The position at which is added
+     */
+    public void add(DbTvShow show, int position){
+        mData.add(0, show);
         notifyDataSetChanged();
     }
 
@@ -86,7 +87,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      * @param position The position to be inserted
      * @param show The show
      */
-    public void add(int position,TvShow show){
+    public void add(int position,DbTvShow show){
         mData.add(position, show);
         notifyDataSetChanged();
     }
@@ -95,7 +96,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      * add new data as a list of items
      * @param data The list of data
      */
-    public void addAll(List<TvShow> data){
+    public void addAll(List<DbTvShow> data){
         mData.clear();
         mData.addAll(data);
         notifyDataSetChanged();
@@ -110,7 +111,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final TvShow show = mData.get(position);
+        final DbTvShow show = mData.get(position);
 
         //download image after size was measured for Picasso center crop size
         ViewTreeObserver vto = holder.image.getViewTreeObserver();
@@ -124,7 +125,8 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
                         .load(UrlConstants.BASE_IMAGE_URL + show.getPosterUrl() + UrlConstants.API_KEY_QUESTION)
                         .resize(finalWidth, finalHeight)
                         .centerCrop()
-                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.color.grey_4_50)
+                        .error(R.color.grey_4_50)
                         .into(holder.image);
 
                 return true;

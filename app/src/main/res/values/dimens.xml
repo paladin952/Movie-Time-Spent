@@ -16,6 +16,7 @@
     <!-- Base dimension-->
     <dimen name="BU_1">12dp</dimen>
     <dimen name="BU_1_2">6dp</dimen>
+    <dimen name="BU_1_4">3dp</dimen>
     <dimen name="BU_0.9">10dp</dimen>
     <dimen name="BU_0.4">5dp</dimen>
     <dimen name="BU_0.5">6dp</dimen>
@@ -29,6 +30,10 @@
     <dimen name="BU_9">108dp</dimen>
     <dimen name="BU_10">120dp</dimen>
     <dimen name="BU_11">132dp</dimen>
+    <dimen name="BU_12">144dp</dimen>
+    <dimen name="BU_20">240dp</dimen>
+    <dimen name="BU_22">264dp</dimen>
+    <dimen name="BU_25">300dp</dimen>
     <dimen name="BU_1.5">18dp</dimen>
 
 
