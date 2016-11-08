@@ -168,14 +168,6 @@
                 android:clickable="true"
                 android:scrollbars="vertical" />
 
-            <com.google.android.gms.ads.AdView
-                android:id="@+id/adView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                ads:adSize="BANNER"
-                ads:adUnitId="@string/admob_main_banner_ca" />
-
         </LinearLayout>
     </RelativeLayout>
 

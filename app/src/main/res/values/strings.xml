@@ -42,11 +42,6 @@
     <string name="undo">Undo</string>
     <string name="share_choose_title">Share this application!</string>
 
-    <!--Crittercism-->
-    <string name="crittercism_app_id">5213b80e249841f49fb9eac1157a813100555300</string>
-
-    <!--Admob-->
-    <string name="admob_main_banner_ca" >ca-app-pub-5100447244378163/4665669532</string>
     <string name="speech_prompt">Speach prompt text</string>
     <string name="speech_not_supported">Voice speech is not supported on your phone!</string>
     <string name="rate">Rate</string>

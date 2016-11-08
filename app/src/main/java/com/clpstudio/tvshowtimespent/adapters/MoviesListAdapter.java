@@ -133,6 +133,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
             }
         });
 
+        holder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
 
         holder.title.setText(show.getName());
         holder.season.setText(show.getNumberOfSeasons() + " seasons");

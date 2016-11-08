@@ -46,8 +46,6 @@ import com.clpstudio.tvshowtimespent.utils.Constants;
 import com.clpstudio.tvshowtimespent.utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.utils.TimeUtils;
 import com.clpstudio.tvshowtimespent.utils.Utils;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -155,12 +153,6 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     View mAddContainer;
 
     /**
-     * The add view binding
-     */
-    @Bind(R.id.adView)
-    AdView mAdView;
-
-    /**
      * The add button binding
      */
     @Bind(R.id.add_button)
@@ -265,32 +257,13 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     @Override
     protected void onDestroy() {
         mDatabaseDAO.close();
-
-        if (mAdView != null) {
-            mAdView.destroy();
-        }
-
         super.onDestroy();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadAds();
         getSupportLoaderManager().initLoader(DatabaseLoader.LOADER_ID, null, mCallbacks).forceLoad();
-    }
-
-    /**
-     * Loads the ads and show to the user
-     */
-    private void loadAds() {
-        if (BuildConfig.DEBUG || !NetworkUtils.isNetworkAvailable(this)) {
-            mAdView.setVisibility(View.GONE);
-            return;
-        }
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-        mAdView.setVisibility(View.VISIBLE);
     }
 
     /**
