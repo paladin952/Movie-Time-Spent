@@ -1,2 +1,2 @@
 # Movie-Time-Spent
-A calculator for time spent watching movies and tv shows
+A tv tracker and a calculator for time spent watching movies and tv shows
