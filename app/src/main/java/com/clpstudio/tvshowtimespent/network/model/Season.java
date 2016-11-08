@@ -4,7 +4,9 @@ package com.clpstudio.tvshowtimespent.network.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Season {
+import java.io.Serializable;
+
+public class Season implements Serializable {
 
     @SerializedName("air_date")
     @Expose
