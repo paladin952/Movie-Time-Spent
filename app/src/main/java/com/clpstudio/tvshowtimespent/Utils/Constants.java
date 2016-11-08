@@ -51,4 +51,8 @@ public class Constants {
          */
         public static final int REQ_CODE_SPEECH_INPUT = 1;
     }
+
+    public class Intents {
+        public static final String KEY_TV_SHOW = "KEY_TV_SHOW";
+    }
 }

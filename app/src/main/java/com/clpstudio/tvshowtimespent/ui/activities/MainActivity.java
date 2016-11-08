@@ -695,8 +695,8 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     }
 
     @Override
-    public void onItemClick(int position) {
-        mMoviesList.smoothScrollToPosition(position);
+    public void onItemClick(DbTvShow dbTvShow) {
+        DetailActivity.startActivity(this, dbTvShow);
     }
 
     /**

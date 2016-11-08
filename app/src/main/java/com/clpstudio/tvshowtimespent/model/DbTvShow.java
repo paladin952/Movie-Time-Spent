@@ -4,15 +4,14 @@ import android.support.annotation.NonNull;
 
 import com.clpstudio.tvshowtimespent.network.model.Season;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by lclapa on 10/26/2015.
  */
-public class DbTvShow implements Comparable<DbTvShow>{
+public class DbTvShow implements Comparable<DbTvShow>, Serializable{
 
     /**
      * The id

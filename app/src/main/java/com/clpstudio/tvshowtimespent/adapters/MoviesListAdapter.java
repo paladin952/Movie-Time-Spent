@@ -37,7 +37,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
      */
     public interface OndMovieEventListener {
 
-        void onItemClick(int position);
+        void onItemClick(DbTvShow dbTvShow);
     }
 
     /**
@@ -133,7 +133,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Vi
             }
         });
 
-        holder.itemView.setOnClickListener(v -> mListener.onItemClick(position));
+        holder.itemView.setOnClickListener(v -> mListener.onItemClick(mData.get(position)));
 
         holder.title.setText(show.getName());
         holder.season.setText(show.getNumberOfSeasons() + " seasons");
