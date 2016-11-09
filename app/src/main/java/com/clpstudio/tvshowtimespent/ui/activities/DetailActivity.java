@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
 import com.clpstudio.tvshowtimespent.model.DbTvShow;
@@ -22,6 +23,9 @@ public class DetailActivity extends AppCompatActivity {
 
     @Bind(R.id.image)
     ImageView image;
+
+    @Bind(R.id.title)
+    TextView title;
 
     public static void startActivity(Activity activity, DbTvShow dbTvShow) {
         Intent intent = new Intent(activity, DetailActivity.class);
@@ -40,11 +44,13 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         tvShow = (DbTvShow) getIntent().getExtras().getSerializable(Constants.Intents.KEY_TV_SHOW);
-
         setupUi();
     }
 
     private void setupUi() {
+        title.setText(tvShow.getName());
+
+
         //download image after size was measured for Picasso center crop size
         ViewTreeObserver vto = image.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
