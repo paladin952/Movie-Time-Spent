@@ -8,9 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by lclapa on 10/26/2015.
- */
+
 public class DbTvShow implements Comparable<DbTvShow>, Serializable{
 
     /**

@@ -2,9 +2,6 @@ package com.clpstudio.tvshowtimespent.persistance.preferences;
 
 import android.content.Context;
 
-/**
- * Created by CLP STUDIO
- */
 public final class SharedPreferencesFactory {
 
     /**

@@ -12,9 +12,7 @@ import com.clpstudio.tvshowtimespent.persistance.model.DBTvShowModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by lclapa on 10/28/2015.
- */
+
 public class DatabaseDAO {
 
     /**

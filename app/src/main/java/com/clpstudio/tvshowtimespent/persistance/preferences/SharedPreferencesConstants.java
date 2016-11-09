@@ -1,8 +1,5 @@
 package com.clpstudio.tvshowtimespent.persistance.preferences;
 
-/**
- * Created by CLP STUDIO
- */
 public final class SharedPreferencesConstants {
 
     /**

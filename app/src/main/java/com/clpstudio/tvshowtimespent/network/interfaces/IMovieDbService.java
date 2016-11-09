@@ -8,9 +8,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
-/**
- * Created by CLP STUDIO
- */
 public interface IMovieDbService {
 
     @GET("tv/{id}")

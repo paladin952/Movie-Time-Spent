@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by CLP STUDIO
- */
 public class TimeUtils {
 
     /**

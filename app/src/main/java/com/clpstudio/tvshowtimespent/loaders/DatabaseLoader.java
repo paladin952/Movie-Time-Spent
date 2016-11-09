@@ -9,9 +9,6 @@ import com.clpstudio.tvshowtimespent.persistance.DatabaseDAO;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by lclapa on 10/28/2015.
- */
 public class DatabaseLoader extends AsyncTaskLoader<List<DbTvShow>> {
     public static final int LOADER_ID = 1;
     protected List<DbTvShow> data;

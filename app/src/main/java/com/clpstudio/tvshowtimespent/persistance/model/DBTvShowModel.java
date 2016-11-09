@@ -1,8 +1,6 @@
 package com.clpstudio.tvshowtimespent.persistance.model;
 
-/**
- * Created by lclapa on 10/28/2015.
- */
+
 public class DBTvShowModel {
 
     /**
