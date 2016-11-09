@@ -9,22 +9,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
-import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
+import com.clpstudio.tvshowtimespent.TvShowApplication;
 import com.clpstudio.tvshowtimespent.general.utils.Constants;
 import com.clpstudio.tvshowtimespent.general.utils.UrlConstants;
+import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
 import com.squareup.picasso.Picasso;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
     private DbTvShow tvShow;
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     ImageView image;
 
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     TextView title;
 
     public static void startActivity(Activity activity, DbTvShow dbTvShow) {
@@ -42,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+        ((TvShowApplication) getApplication()).getDiComponent().inject(this);
 
         tvShow = (DbTvShow) getIntent().getExtras().getSerializable(Constants.Intents.KEY_TV_SHOW);
         setupUi();

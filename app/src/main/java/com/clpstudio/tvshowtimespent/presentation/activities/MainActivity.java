@@ -29,10 +29,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
-import com.clpstudio.tvshowtimespent.presentation.adapters.AutocompleteAdapter;
-import com.clpstudio.tvshowtimespent.presentation.adapters.MoviesListAdapter;
-import com.clpstudio.tvshowtimespent.presentation.loaders.DatabaseLoader;
-import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
 import com.clpstudio.tvshowtimespent.datalayer.network.NetworkUtils;
 import com.clpstudio.tvshowtimespent.datalayer.network.RetrofitServiceFactory;
 import com.clpstudio.tvshowtimespent.datalayer.network.interfaces.IMovieDbService;
@@ -43,6 +39,10 @@ import com.clpstudio.tvshowtimespent.general.utils.Constants;
 import com.clpstudio.tvshowtimespent.general.utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.general.utils.TimeUtils;
 import com.clpstudio.tvshowtimespent.general.utils.Utils;
+import com.clpstudio.tvshowtimespent.presentation.adapters.AutocompleteAdapter;
+import com.clpstudio.tvshowtimespent.presentation.adapters.MoviesListAdapter;
+import com.clpstudio.tvshowtimespent.presentation.loaders.DatabaseLoader;
+import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
@@ -146,16 +146,16 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     /**
      * The container view for add and season edit text
      */
-    @Bind(R.id.add_container)
+    @BindView(R.id.add_container)
     View mAddContainer;
 
     /**
      * The add button binding
      */
-    @Bind(R.id.add_button)
+    @BindView(R.id.add_button)
     Button mAddButton;
 
-    @Bind(R.id.autocomplete_list)
+    @BindView(R.id.autocomplete_list)
     RecyclerView mAutoCompleteList;
 
     /**

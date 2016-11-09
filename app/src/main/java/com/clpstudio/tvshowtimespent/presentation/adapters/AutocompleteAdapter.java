@@ -12,7 +12,7 @@ import com.clpstudio.tvshowtimespent.datalayer.network.model.ApiResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AutocompleteAdapter extends RecyclerView.Adapter<AutocompleteAdapter.ViewHolder> {
@@ -92,7 +92,7 @@ public class AutocompleteAdapter extends RecyclerView.Adapter<AutocompleteAdapte
      * The view holder
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         TextView title;
 
         public ViewHolder(View itemView) {
