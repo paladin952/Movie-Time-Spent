@@ -1,16 +1,11 @@
 package com.clpstudio.tvshowtimespent.datalayer.repository;
 
-import com.clpstudio.tvshowtimespent.datalayer.network.listener.ApiListener;
-import com.clpstudio.tvshowtimespent.datalayer.network.model.ApiModel;
 import com.clpstudio.tvshowtimespent.datalayer.repository.abstraction.ITvRepository;
 import com.clpstudio.tvshowtimespent.datalayer.repository.datasource.TvCachedDataSource;
 import com.clpstudio.tvshowtimespent.datalayer.repository.datasource.TvOnlineDataSource;
 
 import javax.inject.Inject;
 
-/**
- * Created by clapalucian on 11/9/16.
- */
 
 public class TvRepository implements ITvRepository {
 
@@ -24,13 +19,13 @@ public class TvRepository implements ITvRepository {
     }
 
     @Override
-    public void getTvShowById(String id, ApiListener<ApiModel> listener) {
-        onlineDataSource.getTvShowById(id, listener);
+    public void getTvShowById(String id) {
+        onlineDataSource.getTvShowById(id);
     }
 
     @Override
-    public void getTvShowByName(String name, ApiListener<ApiModel> listener) {
-        onlineDataSource.getTvShowByName(name, listener);
+    public void getTvShowByName(String name) {
+        onlineDataSource.getTvShowByName(name);
     }
 
 }

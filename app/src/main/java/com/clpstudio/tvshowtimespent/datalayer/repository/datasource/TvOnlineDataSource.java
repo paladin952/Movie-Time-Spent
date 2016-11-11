@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.clpstudio.tvshowtimespent.R;
 import com.clpstudio.tvshowtimespent.datalayer.network.interfaces.IMovieDbService;
-import com.clpstudio.tvshowtimespent.datalayer.network.listener.ApiListener;
 import com.clpstudio.tvshowtimespent.datalayer.network.model.ApiModel;
 import com.clpstudio.tvshowtimespent.datalayer.network.model.TvShow;
 import com.clpstudio.tvshowtimespent.datalayer.repository.datasource.abstraction.ITvDataSource;
@@ -28,35 +27,20 @@ public class TvOnlineDataSource implements ITvDataSource {
 
 
     @Override
-    public void getTvShowById(String id, ApiListener<TvShow, String> listener) {
-        onlineApiService
+    public Observable<TvShow> getTvShowById(String id) {
+        return onlineApiService
                 .getTvShowById(id, context.getResources().getString(R.string.api_key))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> {
-                    listener.onError("error");
-                    return Observable.empty();
-                })
-                .subscribe(listener::onSuccess);
+                .onErrorResumeNext(throwable -> Observable.empty());
     }
 
     @Override
-    public void getTvShowByName(String name, ApiListener<ApiModel, String> listener) {
-        onlineApiService
+    public Observable<ApiModel> getTvShowByName(String name) {
+        return onlineApiService
                 .getTvShowsByName(name, context.getString(R.string.api_key))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> {
-                    listener.onError("error");
-                    return Observable.empty();
-                })
-                .onErrorResumeNext(throwable1 -> Observable.empty())
-                .subscribe(apiModel -> {
-                    if (apiModel == null) {
-                        listener.onError("error");
-                    } else {
-                        listener.onSuccess(apiModel);
-                    }
-                });
+                .onErrorResumeNext(throwable1 -> Observable.empty());
     }
 }

@@ -1,8 +1,9 @@
 package com.clpstudio.tvshowtimespent.datalayer.repository.datasource.abstraction;
 
-import com.clpstudio.tvshowtimespent.datalayer.network.listener.ApiListener;
 import com.clpstudio.tvshowtimespent.datalayer.network.model.ApiModel;
 import com.clpstudio.tvshowtimespent.datalayer.network.model.TvShow;
+
+import rx.Observable;
 
 /**
  * Created by clapalucian on 11/9/16.
@@ -10,8 +11,8 @@ import com.clpstudio.tvshowtimespent.datalayer.network.model.TvShow;
 
 public interface ITvDataSource {
 
-    void getTvShowById(String id, ApiListener<TvShow, String> listener);
+    Observable<TvShow> getTvShowById(String id);
 
-    void getTvShowByName(String name, ApiListener<ApiModel, String> listener);
+    Observable<ApiModel> getTvShowByName(String name);
 
 }
