@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.presentation.activities;
+package com.clpstudio.tvshowtimespent.presentation.favoritescreen;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

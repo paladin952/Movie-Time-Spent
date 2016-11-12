@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.presentation.activities;
+package com.clpstudio.tvshowtimespent.presentation.mainscreen;
 
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -39,9 +39,10 @@ import com.clpstudio.tvshowtimespent.general.utils.Constants;
 import com.clpstudio.tvshowtimespent.general.utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.general.utils.TimeUtils;
 import com.clpstudio.tvshowtimespent.general.utils.Utils;
-import com.clpstudio.tvshowtimespent.presentation.adapters.AutocompleteAdapter;
-import com.clpstudio.tvshowtimespent.presentation.adapters.MoviesListAdapter;
-import com.clpstudio.tvshowtimespent.presentation.loaders.DatabaseLoader;
+import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.AutocompleteAdapter;
+import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.MoviesListAdapter;
+import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
+import com.clpstudio.tvshowtimespent.presentation.mainscreen.loaders.DatabaseLoader;
 import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.trello.rxlifecycle.ActivityEvent;

@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.presentation.adapters;
+package com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

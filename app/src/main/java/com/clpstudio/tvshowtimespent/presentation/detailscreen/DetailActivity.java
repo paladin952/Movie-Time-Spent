@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.presentation.activities;
+package com.clpstudio.tvshowtimespent.presentation.detailscreen;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,10 +1,10 @@
 package com.clpstudio.tvshowtimespent.general.dagger;
 
 import com.clpstudio.tvshowtimespent.TvShowApplication;
-import com.clpstudio.tvshowtimespent.presentation.activities.DetailActivity;
-import com.clpstudio.tvshowtimespent.presentation.activities.FavoritesActivity;
-import com.clpstudio.tvshowtimespent.presentation.activities.MainActivity;
-import com.clpstudio.tvshowtimespent.presentation.activities.SearchActivity;
+import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
+import com.clpstudio.tvshowtimespent.presentation.favoritescreen.FavoritesActivity;
+import com.clpstudio.tvshowtimespent.presentation.mainscreen.MainActivity;
+import com.clpstudio.tvshowtimespent.presentation.searchscreen.SearchActivity;
 
 import javax.inject.Singleton;
 

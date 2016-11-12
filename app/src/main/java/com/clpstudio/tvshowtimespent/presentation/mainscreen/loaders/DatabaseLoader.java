@@ -1,4 +1,4 @@
-package com.clpstudio.tvshowtimespent.presentation.loaders;
+package com.clpstudio.tvshowtimespent.presentation.mainscreen.loaders;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
