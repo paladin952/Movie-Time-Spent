@@ -8,6 +8,4 @@ import com.clpstudio.tvshowtimespent.general.mvp.abstraction.BaseMvpPresenter;
 
 public class MainScreenPresenter extends BaseMvpPresenter<IMainScreenPresenter.View> implements IMainScreenPresenter {
 
-
-
 }

@@ -25,11 +25,16 @@
         </activity>
         <activity
             android:name=".presentation.detailscreen.DetailActivity"
-            android:parentActivityName=".presentation.mainscreen.MainActivity">
+            android:parentActivityName=".presentation.mainscreen.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".presentation.searchscreen.SearchActivity">
+        <activity
+            android:name=".presentation.searchscreen.SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".presentation.favoritescreen.FavoritesActivity">
+        <activity
+            android:name=".presentation.favoritescreen.FavoritesActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

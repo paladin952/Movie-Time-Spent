@@ -44,6 +44,7 @@ import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.MoviesList
 import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.loaders.DatabaseLoader;
 import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
+import com.clpstudio.tvshowtimespent.presentation.searchscreen.SearchActivity;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -250,6 +251,8 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         setupMovieList();
         setupListeners();
         setupToolbar();
+
+//        SearchActivity.startActivity(this, "");
     }
 
     @Override

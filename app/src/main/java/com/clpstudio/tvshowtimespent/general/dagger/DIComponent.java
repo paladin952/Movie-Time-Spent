@@ -1,6 +1,7 @@
 package com.clpstudio.tvshowtimespent.general.dagger;
 
 import com.clpstudio.tvshowtimespent.TvShowApplication;
+import com.clpstudio.tvshowtimespent.general.mvp.dagger.MvpModule;
 import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
 import com.clpstudio.tvshowtimespent.presentation.favoritescreen.FavoritesActivity;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.MainActivity;
@@ -14,6 +15,7 @@ import dagger.Component;
         modules = {
                 ApplicationModule.class,
                 NetworkModule.class,
+                MvpModule.class
         }
 )
 @Singleton

@@ -1,10 +1,11 @@
 
 package com.clpstudio.tvshowtimespent.datalayer.network.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApiModel {
 
@@ -93,4 +94,13 @@ public class ApiModel {
         this.totalPages = totalPages;
     }
 
+    @Override
+    public String toString() {
+        return "ApiModel{" +
+                "page=" + page +
+                ", apiResults=" + apiResults +
+                ", totalResults=" + totalResults +
+                ", totalPages=" + totalPages +
+                '}';
+    }
 }

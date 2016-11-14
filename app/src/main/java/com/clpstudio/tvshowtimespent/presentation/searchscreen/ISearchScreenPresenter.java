@@ -8,6 +8,8 @@ import com.clpstudio.tvshowtimespent.general.mvp.abstraction.IBaseMvpPresenter;
 
 public interface ISearchScreenPresenter extends IBaseMvpPresenter<ISearchScreenPresenter.View> {
 
+    void search(String query);
+
     public interface View {
 
     }
