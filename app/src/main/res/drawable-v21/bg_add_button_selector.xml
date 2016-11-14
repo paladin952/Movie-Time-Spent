@@ -7,6 +7,6 @@
 
     <!-- Default-->
     <item>
-        <color android:color="@color/dark_petrol"/>
+        <color android:color="@color/green_dark_petrol"/>
     </item>
 </ripple>

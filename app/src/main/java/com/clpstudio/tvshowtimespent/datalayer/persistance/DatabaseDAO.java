@@ -161,4 +161,5 @@ public class DatabaseDAO {
                     String.valueOf(show.getMinutesTotalTime()), show.getPosterUrl(), show.getPositionInList());
         }
     }
+
 }

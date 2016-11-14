@@ -252,7 +252,7 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         setupListeners();
         setupToolbar();
 
-//        SearchActivity.startActivity(this, "");
+        SearchActivity.startActivity(this, "");
     }
 
     @Override

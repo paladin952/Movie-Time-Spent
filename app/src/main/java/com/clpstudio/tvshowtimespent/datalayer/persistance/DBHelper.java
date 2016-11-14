@@ -15,7 +15,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * The database version
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     /**
      * Currency table name
@@ -69,6 +69,11 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_IMAGE_URL + " text,"
             + COLUMN_POSITION_IN_LIST + " integer);";
 
+    private static final String CREATE_SUGGESTIONS_TABLE = "create table if not exists "
+            + SuggestionDAO.Columns.TABLE_NAME
+            + "(" + SuggestionDAO.Columns.COLUMN_NAME + " text, "
+            +  SuggestionDAO.Columns.COLUMN_TIMESTAMP + " integer);";
+
     /**
      * Private constructor for singleton
      * @param context The context
@@ -95,7 +100,7 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DATABASE_CREATE);
+        db.execSQL(DATABASE_CREATE + CREATE_SUGGESTIONS_TABLE);
     }
 
     /**
@@ -106,7 +111,10 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TV_SHOW_NAME);
         onCreate(db);
+
+        if (newVersion == 3) {
+            db.execSQL(CREATE_SUGGESTIONS_TABLE);
+        }
     }
 }

@@ -140,8 +140,8 @@
                 android:imeOptions="actionDone"
                 android:inputType="number"
                 android:maxLines="1"
-                android:textColor="@color/dark_petrol"
-                android:textColorHint="@color/dark_petrol"
+                android:textColor="@color/green_dark_petrol"
+                android:textColorHint="@color/green_dark_petrol"
                 android:typeface="serif" />
 
             <Button

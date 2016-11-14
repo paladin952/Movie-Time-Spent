@@ -3,8 +3,10 @@ package com.clpstudio.tvshowtimespent.presentation.searchscreen;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,6 +16,9 @@ import com.clpstudio.tvshowtimespent.TvShowApplication;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -57,6 +62,12 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
         setListeners();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.refreshSuggestions();
+    }
+
     /**
      * Setup the toolbar
      */
@@ -66,10 +77,12 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
     }
 
     private void setListeners() {
+        searchView.setVoiceSearch(true);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Do some magic
+                presenter.search(query);
                 return false;
             }
 
@@ -77,6 +90,18 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
             public boolean onQueryTextChange(String newText) {
                 //Do some magic
                 return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
             }
         });
     }
@@ -100,4 +125,26 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && matches.size() > 0) {
+                String searchWrd = matches.get(0);
+                if (!TextUtils.isEmpty(searchWrd)) {
+                    searchView.setQuery(searchWrd, false);
+                }
+            }
+
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void refreshSuggestions(List<String> suggestions) {
+        String[] array = new String[suggestions.size()];
+        suggestions.toArray(array);
+        searchView.setSuggestions(array);
+    }
 }
