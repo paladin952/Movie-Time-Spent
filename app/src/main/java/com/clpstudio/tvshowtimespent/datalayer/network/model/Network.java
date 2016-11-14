@@ -49,4 +49,11 @@ public class Network {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Network{" +
+                "name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

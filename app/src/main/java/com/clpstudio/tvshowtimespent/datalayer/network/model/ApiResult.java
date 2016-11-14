@@ -153,4 +153,22 @@ public class ApiResult {
         this.originalName = originalName;
     }
 
+    @Override
+    public String toString() {
+        return "ApiResult{" +
+                "posterPath='" + posterPath + '\'' +
+                ", popularity=" + popularity +
+                ", id=" + id +
+                ", backdropPath='" + backdropPath + '\'' +
+                ", voteAverage=" + voteAverage +
+                ", overview='" + overview + '\'' +
+                ", firstAirDate='" + firstAirDate + '\'' +
+                ", originCountry=" + originCountry +
+                ", genreIds=" + genreIds +
+                ", originalLanguage='" + originalLanguage + '\'' +
+                ", voteCount=" + voteCount +
+                ", name='" + name + '\'' +
+                ", originalName='" + originalName + '\'' +
+                '}';
+    }
 }

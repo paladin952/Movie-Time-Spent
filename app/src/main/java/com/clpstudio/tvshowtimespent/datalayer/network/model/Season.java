@@ -114,4 +114,14 @@ public class Season implements Serializable {
         this.seasonNumber = seasonNumber;
     }
 
+    @Override
+    public String toString() {
+        return "Season{" +
+                "airDate='" + airDate + '\'' +
+                ", episodeCount=" + episodeCount +
+                ", id=" + id +
+                ", posterPath='" + posterPath + '\'' +
+                ", seasonNumber=" + seasonNumber +
+                '}';
+    }
 }

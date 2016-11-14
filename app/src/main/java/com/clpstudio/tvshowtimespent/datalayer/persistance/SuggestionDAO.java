@@ -117,7 +117,7 @@ public class SuggestionDAO {
         List<String> result = new ArrayList<>();
 
         Cursor cursor = mDatabase.query(TABLE_NAME,
-                mAllColumnsArray, null, null, null, null, Columns.COLUMN_TIMESTAMP + " DESC limit 10");
+                mAllColumnsArray, null, null, null, null, Columns.COLUMN_TIMESTAMP + " DESC limit 50");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

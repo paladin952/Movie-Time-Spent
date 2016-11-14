@@ -556,4 +556,35 @@ public class TvShow {
         this.voteCount = voteCount;
     }
 
+    @Override
+    public String toString() {
+        return "TvShow{" +
+                "backdropPath='" + backdropPath + '\'' +
+                ", createdBy=" + createdBy +
+                ", episodeRunTime=" + episodeRunTime +
+                ", firstAirDate='" + firstAirDate + '\'' +
+                ", genres=" + genres +
+                ", homepage='" + homepage + '\'' +
+                ", id=" + id +
+                ", inProduction=" + inProduction +
+                ", languages=" + languages +
+                ", lastAirDate='" + lastAirDate + '\'' +
+                ", name='" + name + '\'' +
+                ", networks=" + networks +
+                ", numberOfEpisodes=" + numberOfEpisodes +
+                ", numberOfSeasons=" + numberOfSeasons +
+                ", originCountry=" + originCountry +
+                ", originalLanguage='" + originalLanguage + '\'' +
+                ", originalName='" + originalName + '\'' +
+                ", overview='" + overview + '\'' +
+                ", popularity=" + popularity +
+                ", posterPath='" + posterPath + '\'' +
+                ", productionCompanies=" + productionCompanies +
+                ", seasons=" + seasons +
+                ", status='" + status + '\'' +
+                ", type='" + type + '\'' +
+                ", voteAverage=" + voteAverage +
+                ", voteCount=" + voteCount +
+                '}';
+    }
 }
