@@ -78,6 +78,7 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
 
     private void setListeners() {
         searchView.setVoiceSearch(true);
+        searchView.setSubmitOnClick(true);
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -93,6 +94,7 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
             }
         });
 
+
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
@@ -101,9 +103,14 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
 
             @Override
             public void onSearchViewClosed() {
-                //Do some magic
+
             }
         });
+    }
+
+    @Override
+    public void dismissSuggestions() {
+        searchView.dismissSuggestions();
     }
 
     @Override

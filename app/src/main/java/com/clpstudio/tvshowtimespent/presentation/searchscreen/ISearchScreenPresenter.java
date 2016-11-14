@@ -17,6 +17,8 @@ public interface ISearchScreenPresenter extends IBaseMvpPresenter<ISearchScreenP
     public interface View {
 
         void refreshSuggestions(List<String> suggestions);
+
+        void dismissSuggestions();
     }
 
 }
