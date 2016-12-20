@@ -35,6 +35,12 @@
         android:title="@string/rate"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="3"
+        android:title="@string/logout"
+        app:showAsAction="never" />
+
 
 
 </menu>

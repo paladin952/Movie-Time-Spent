@@ -30,6 +30,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
+import com.clpstudio.tvshowtimespent.TvShowApplication;
+import com.clpstudio.tvshowtimespent.bussiness.login.Session;
 import com.clpstudio.tvshowtimespent.datalayer.network.NetworkUtils;
 import com.clpstudio.tvshowtimespent.datalayer.network.RetrofitServiceFactory;
 import com.clpstudio.tvshowtimespent.datalayer.network.interfaces.IMovieDbService;
@@ -40,6 +42,7 @@ import com.clpstudio.tvshowtimespent.general.utils.Constants;
 import com.clpstudio.tvshowtimespent.general.utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.general.utils.TimeUtils;
 import com.clpstudio.tvshowtimespent.general.utils.Utils;
+import com.clpstudio.tvshowtimespent.presentation.login.LoginActivity;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.AutocompleteAdapter;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.MoviesListAdapter;
 import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
@@ -56,6 +59,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -161,6 +166,9 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     @BindView(R.id.autocomplete_list)
     RecyclerView mAutoCompleteList;
 
+    @Inject
+    Session session;
+
     /**
      * Called when add button is clicked
      */
@@ -249,6 +257,7 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        ((TvShowApplication)getApplicationContext()).getDiComponent().inject(this);
         mCallbacks = this;
         setupDatabase();
         linkUi();
@@ -417,8 +426,17 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
             case R.id.action_rate:
                 handleOnClickRate();
                 return true;
+            case R.id.logout:
+                handleLogoutClick();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void handleLogoutClick() {
+        session.setCurrentUser("");
+        LoginActivity.startActivity(this);
+        finish();
     }
 
     /**

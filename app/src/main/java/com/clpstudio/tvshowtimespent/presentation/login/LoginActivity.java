@@ -1,5 +1,7 @@
 package com.clpstudio.tvshowtimespent.presentation.login;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -32,6 +34,10 @@ public class LoginActivity extends AppCompatActivity implements ILoginPresenter.
 
     @BindView(R.id.content)
     View mainContent;
+
+    public static void startActivity(Activity activity) {
+        activity.startActivity(new Intent(activity, LoginActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
