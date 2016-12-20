@@ -2,6 +2,7 @@ package com.clpstudio.tvshowtimespent.datalayer.persistance.preferences;
 
 public final class SharedPreferencesConstants {
 
+
     /**
      * Private constructor because this class is static
      */
@@ -14,4 +15,5 @@ public final class SharedPreferencesConstants {
      */
     public static final String PREF_SEARCH_HISTORY_KEY = "PREF_SEARCH_HISTORY_KEY";
 
+    public static final String PREF_CURRENT_USER = "current_user";
 }

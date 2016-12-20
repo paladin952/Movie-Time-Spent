@@ -1,5 +1,6 @@
 package com.clpstudio.tvshowtimespent.presentation.mainscreen;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -190,6 +191,10 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
 
     }
 
+    public static void startActivity(Activity activity) {
+        activity.startActivity(new Intent(activity, MainActivity.class));
+    }
+
     /**
      * Updating the database with the new items
      */
@@ -251,8 +256,6 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         setupMovieList();
         setupListeners();
         setupToolbar();
-
-        SearchActivity.startActivity(this, "");
     }
 
     @Override

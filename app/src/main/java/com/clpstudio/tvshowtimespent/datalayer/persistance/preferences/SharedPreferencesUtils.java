@@ -33,6 +33,15 @@ public class SharedPreferencesUtils implements ISharedPreferences {
         mSharedPreferences.edit().putBoolean(key, value).apply();
     }
 
+    /**
+     * Set the value of the preference
+     *
+     * @param key   The key
+     * @param value The value
+     */
+    private void setPreferenceValue(String key, String value) {
+        mSharedPreferences.edit().putString(key, value).apply();
+    }
 
     /**
      * Set the value of the preference
@@ -71,4 +80,13 @@ public class SharedPreferencesUtils implements ISharedPreferences {
         mSharedPreferences.edit().putInt(key, value).apply();
     }
 
+    @Override
+    public void setCurrentUser(String user) {
+        setPreferenceValue(SharedPreferencesConstants.PREF_CURRENT_USER, user);
+    }
+
+    @Override
+    public String getCurrentUser() {
+        return getPreferenceValue(SharedPreferencesConstants.PREF_CURRENT_USER, "");
+    }
 }

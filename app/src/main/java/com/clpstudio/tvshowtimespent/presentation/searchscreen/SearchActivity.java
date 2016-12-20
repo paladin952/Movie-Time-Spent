@@ -72,7 +72,6 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
      * Setup the toolbar
      */
     private void setupToolbar() {
-        toolbar.setTitle("");
         setSupportActionBar(toolbar);
     }
 
@@ -93,7 +92,6 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
                 return false;
             }
         });
-
 
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
@@ -116,10 +114,8 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_menu, menu);
-
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-
         return true;
     }
 
@@ -142,7 +138,6 @@ public class SearchActivity extends AppCompatActivity implements ISearchScreenPr
                     searchView.setQuery(searchWrd, false);
                 }
             }
-
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
