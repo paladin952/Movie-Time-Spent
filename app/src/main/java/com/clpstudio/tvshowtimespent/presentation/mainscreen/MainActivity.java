@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.clpstudio.tvshowtimespent.R;
 import com.clpstudio.tvshowtimespent.TvShowApplication;
+import com.clpstudio.tvshowtimespent.bussiness.login.NotificationController;
 import com.clpstudio.tvshowtimespent.bussiness.login.Session;
 import com.clpstudio.tvshowtimespent.datalayer.network.NetworkUtils;
 import com.clpstudio.tvshowtimespent.datalayer.network.RetrofitServiceFactory;
@@ -42,13 +43,12 @@ import com.clpstudio.tvshowtimespent.general.utils.Constants;
 import com.clpstudio.tvshowtimespent.general.utils.SnackBarUtils;
 import com.clpstudio.tvshowtimespent.general.utils.TimeUtils;
 import com.clpstudio.tvshowtimespent.general.utils.Utils;
+import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
 import com.clpstudio.tvshowtimespent.presentation.login.LoginActivity;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.AutocompleteAdapter;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.adapters.MoviesListAdapter;
-import com.clpstudio.tvshowtimespent.presentation.detailscreen.DetailActivity;
 import com.clpstudio.tvshowtimespent.presentation.mainscreen.loaders.DatabaseLoader;
 import com.clpstudio.tvshowtimespent.presentation.model.DbTvShow;
-import com.clpstudio.tvshowtimespent.presentation.searchscreen.SearchActivity;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -169,6 +169,9 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
     @Inject
     Session session;
 
+    @Inject
+    NotificationController notificationController;
+
     /**
      * Called when add button is clicked
      */
@@ -257,7 +260,7 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        ((TvShowApplication)getApplicationContext()).getDiComponent().inject(this);
+        ((TvShowApplication) getApplicationContext()).getDiComponent().inject(this);
         mCallbacks = this;
         setupDatabase();
         linkUi();
@@ -265,6 +268,10 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
         setupMovieList();
         setupListeners();
         setupToolbar();
+
+        Observable.fromCallable(() -> null)
+                .delay(10, TimeUnit.SECONDS)
+                .subscribe(o -> notificationController.showWeMissYouNotification(MainActivity.this));
     }
 
     @Override
@@ -450,9 +457,9 @@ public class MainActivity extends RxAppCompatActivity implements AutocompleteAda
      * Get's called when the user presses on voice control button
      */
     private void handleVoiceControl() {
-        if(NetworkUtils.isNetworkAvailable(this)){
+        if (NetworkUtils.isNetworkAvailable(this)) {
             promptSpeechInput();
-        }else{
+        } else {
             SnackBarUtils.snackError(this, mCoordinatorLayout, getString(R.string.error_no_internet_connection));
         }
     }
