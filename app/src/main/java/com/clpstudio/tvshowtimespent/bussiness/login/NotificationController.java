@@ -45,15 +45,4 @@ public final class NotificationController {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         return notification;
     }
-
-    /**
-     * Clear a notification, if visible, by id
-     *
-     * @param id The id of the notification
-     */
-    public void clearNotification(int id) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(id);
-    }
-
 }
