@@ -55,6 +55,8 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
 
+    //Chart
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
 
     //Annotations
     compile "com.android.support:support-annotations:23.3.0"

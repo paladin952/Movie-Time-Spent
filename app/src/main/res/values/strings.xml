@@ -46,5 +46,8 @@
     <string name="speech_not_supported">Voice speech is not supported on your phone!</string>
     <string name="rate">Rate</string>
     <string name="logout">Logout</string>
+    <string name="episodes">Episodes</string>
+    <string name="seasons">Seasons</string>
+    <string name="seasons_x">Seasons %1$d</string>
 
 </resources>
